@@ -63,7 +63,7 @@ public class Lab1 {
         // System.out.println(inpWaterPositions);
         // System.out.println();
 
-        Map<Integer, ArrayList<Integer>> outputs = new HashMap<Integer, ArrayList<Integer>>();
+        // Map<Integer, ArrayList<Integer>> outputs = new HashMap<Integer, ArrayList<Integer>>();
         for (Integer pos: inpWaterPositions) {
             int leftBorder = pos;
             int rightBorder = pos;
@@ -94,22 +94,25 @@ public class Lab1 {
                 }
             }
 
-            ArrayList<Integer> outputValue = new ArrayList<Integer>();
-            outputValue.add(leftBorder);
-            outputValue.add(rightBorder);
-            outputs.put(pos, outputValue);
+            System.out.print(leftBorder);
+            System.out.print(" ");
+            System.out.println(rightBorder);
+            // ArrayList<Integer> outputValue = new ArrayList<Integer>();
+            // outputValue.add(leftBorder);
+            // outputValue.add(rightBorder);
+            // outputs.put(pos, outputValue);
         };
 
         // System.out.print(outputs);
 
-        for (Map.Entry<Integer, ArrayList<Integer>> entry: outputs.entrySet()) {
-            for (Integer pos: entry.getValue()) {
-                System.out.print(pos);
-                System.out.print(" ");
-            }
-            System.out.println();
-        }
-        out.close();
+        // for (Map.Entry<Integer, ArrayList<Integer>> entry: outputs.entrySet()) {
+        //     for (Integer pos: entry.getValue()) {
+        //         System.out.print(pos);
+        //         System.out.print(" ");
+        //     }
+        //     System.out.println();
+        // }
+        // out.close();
     }
 
     static class InputReader {
