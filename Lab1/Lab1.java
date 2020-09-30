@@ -66,7 +66,7 @@ public class Lab1 {
             // };
         };
 
-        // Getting the Q-number of waterfall cases
+        // Getting the Q-ntempRightHeightumber of waterfall cases
         ArrayList<Integer> inpWaterPositions = new ArrayList<Integer>();
         // Iterate by the nums of Q to get the x value of where the water will start flowing
         for (int i = 0; i < inpUnits.get("Q"); i++) {
@@ -78,6 +78,56 @@ public class Lab1 {
         System.out.println(inpWaterPositions);
         System.out.println();
 
+        Map<Integer, ArrayList<Integer>> outputs = new HashMap<Integer, ArrayList<Integer>>();
+        for (Integer pos: inpWaterPositions) {
+            int leftBorder = pos;
+            int rightBorder = pos;
+
+            // Iterate forward
+            int tempRightHeight = inpWallDimensions.get(pos).size();
+            if (pos < inpUnits.get("L")) {
+                for (int a = pos + 1; a <= inpUnits.get("L"); a++) {
+                    if (inpWallDimensions.get(a).size() <= tempRightHeight) {
+                        rightBorder = a;
+                        tempRightHeight = inpWallDimensions.get(a).size();
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            // Iterate backward
+            int tempLeftHeight = inpWallDimensions.get(pos).size();
+            if (pos > 1) {
+                for (int a = pos - 1; a >= 1; a--) {
+                    if (inpWallDimensions.get(a).size() <= tempLeftHeight) {
+                        leftBorder = a;
+                        tempLeftHeight = inpWallDimensions.get(a).size();
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            ArrayList<Integer> outputValue = new ArrayList<Integer>();
+            outputValue.add(leftBorder);
+            outputValue.add(rightBorder);
+            outputs.put(pos, outputValue);
+
+
+            // // Instantiate iterator object
+            // Iterator<Integer, ArrayList<Integer>> iter = inpWallDimensions.entrySet().iterator();
+            // int leftBorder = 0;
+            // int rightBorder = 0;
+
+            // // Iterate forward if any
+            // if (pos >= 1) {
+            //     for(iter = pos; iter.isValid(); iter.forward()){
+
+            //     })
+            // }
+        }
+
         // for (Map.Entry<Integer, ArrayList<Integer>> entry: inpWallDimensions.entrySet()) {
         //     // System.out.println(entry.getKey());
         //     // System.out.println(entry.getValue());
@@ -94,21 +144,7 @@ public class Lab1 {
         //     System.out.println();
         // }
 
-        // for (Map.Entry<Integer, ArrayList<Integer>> entry: inpWallDimensions.entrySet()) {
-        //     // System.out.println(entry.getKey());
-        //     // System.out.println(entry.getValue());
-
-        //     for(int a = 1; a <= inpUnits.get("L"); a++) {
-        //         if (entry.getValue().contains(a)) {
-        //             System.out.print("X");
-        //             System.out.print(" ");
-        //         } else {
-        //             System.out.print("-");
-        //             System.out.print(" ");
-        //         }
-        //     }
-        //     System.out.println();
-        // }
+        System.out.print(outputs);
 
         out.close();
     }
