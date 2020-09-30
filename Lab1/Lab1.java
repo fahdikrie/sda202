@@ -49,21 +49,6 @@ public class Lab1 {
 
                 inpWallDimensions.put(j, inpColumnDimensions);
             };
-
-
-            // // Second layer of iteration, iterate by K-rows
-            // for (int j = 0; j < K; j++) {
-            //     ArrayList<Integer> inpRowDimensions = new ArrayList<Integer>();
-
-            //     // Third layer of iteration, add bricks to each row
-            //     for (int k = a; k <= b; k++) {
-            //         inpRowDimensions.add(k);
-            //     };
-
-            //     // Add input to map using nRow as Key, and inpRowDimensions as Value
-            //     inpWallDimensions.put(nRow, inpRowDimensions);
-            //     nRow++;
-            // };
         };
 
         // Getting the Q-ntempRightHeightumber of waterfall cases
@@ -73,10 +58,10 @@ public class Lab1 {
             inpWaterPositions.add(in.nextInt());
         };
 
-        System.out.println(inpUnits);
-        System.out.println(inpWallDimensions);
-        System.out.println(inpWaterPositions);
-        System.out.println();
+        // System.out.println(inpUnits);
+        // System.out.println(inpWallDimensions);
+        // System.out.println(inpWaterPositions);
+        // System.out.println();
 
         Map<Integer, ArrayList<Integer>> outputs = new HashMap<Integer, ArrayList<Integer>>();
         for (Integer pos: inpWaterPositions) {
@@ -113,39 +98,17 @@ public class Lab1 {
             outputValue.add(leftBorder);
             outputValue.add(rightBorder);
             outputs.put(pos, outputValue);
+        };
 
+        // System.out.print(outputs);
 
-            // // Instantiate iterator object
-            // Iterator<Integer, ArrayList<Integer>> iter = inpWallDimensions.entrySet().iterator();
-            // int leftBorder = 0;
-            // int rightBorder = 0;
-
-            // // Iterate forward if any
-            // if (pos >= 1) {
-            //     for(iter = pos; iter.isValid(); iter.forward()){
-
-            //     })
-            // }
+        for (Map.Entry<Integer, ArrayList<Integer>> entry: outputs.entrySet()) {
+            for (Integer pos: entry.getValue()) {
+                System.out.print(pos);
+                System.out.print(" ");
+            }
+            System.out.println();
         }
-
-        // for (Map.Entry<Integer, ArrayList<Integer>> entry: inpWallDimensions.entrySet()) {
-        //     // System.out.println(entry.getKey());
-        //     // System.out.println(entry.getValue());
-
-        //     for(int a = 1; a <= inpUnits.get("L"); a++) {
-        //         if (entry.getValue().contains(a)) {
-        //             System.out.print("X");
-        //             System.out.print(" ");
-        //         } else {
-        //             System.out.print("-");
-        //             System.out.print(" ");
-        //         }
-        //     }
-        //     System.out.println();
-        // }
-
-        System.out.print(outputs);
-
         out.close();
     }
 
