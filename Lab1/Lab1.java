@@ -16,7 +16,7 @@ public class Lab1 {
         };
 
         // Getting the N-rows dimension of the wall
-        int nRow = 1;
+        // int nRow = 1;
         Map<Integer, ArrayList<Integer>> inpWallDimensions = new HashMap<Integer, ArrayList<Integer>>();
         // First layer of iteration, iterate by N-operations
         for (int i = 0; i < inpUnits.get("N"); i++) {
@@ -24,23 +24,49 @@ public class Lab1 {
             int b = in.nextInt();
             int K = in.nextInt();
 
-            // Second layer of iteration, iterate by K-rows
-            for (int j = 0; j < K; j++) {
-                ArrayList<Integer> inpRowDimensions = new ArrayList<Integer>();
+            // Second layer of iteration, iterate by L-length (or width)
+            for (int j = 1; j <= inpUnits.get("L"); j++) {
+                ArrayList<Integer> inpColumnDimensions = new ArrayList<Integer>();
+                ArrayList<Integer> temp = new ArrayList<Integer>();
 
-                // Third layer of iteration, add bricks to each row
-                for (int k = a; k <= b; k++) {
-                    inpRowDimensions.add(k);
+                // Append values inbetween a & b to temp
+                for (int val = a; val <= b; val++) {
+                    temp.add(val);
                 };
 
-                // Add input to map using nRow as Key, and inpRowDimensions as Value
-                inpWallDimensions.put(nRow, inpRowDimensions);
-                nRow++;
+                // Third layer of iteration, iterate by K-rows
+                for (int k = 0; k < K; k++) {
+                    if (temp.contains(j)) {
+                        inpColumnDimensions.add(j);
+                    }
+                };
+
+                // Check if key J is already on hashmap
+                if (inpWallDimensions.containsKey(j)) {
+                    // if true, append j's value to inpColunmDimensions
+                    inpColumnDimensions.addAll(inpWallDimensions.get(j));
+                };
+
+                inpWallDimensions.put(j, inpColumnDimensions);
             };
+
+
+            // // Second layer of iteration, iterate by K-rows
+            // for (int j = 0; j < K; j++) {
+            //     ArrayList<Integer> inpRowDimensions = new ArrayList<Integer>();
+
+            //     // Third layer of iteration, add bricks to each row
+            //     for (int k = a; k <= b; k++) {
+            //         inpRowDimensions.add(k);
+            //     };
+
+            //     // Add input to map using nRow as Key, and inpRowDimensions as Value
+            //     inpWallDimensions.put(nRow, inpRowDimensions);
+            //     nRow++;
+            // };
         };
 
         // Getting the Q-number of waterfall cases
-        // Map<String, Integer> inpUnits = new HashMap<String, Integer>();
         ArrayList<Integer> inpWaterPositions = new ArrayList<Integer>();
         // Iterate by the nums of Q to get the x value of where the water will start flowing
         for (int i = 0; i < inpUnits.get("Q"); i++) {
@@ -50,6 +76,39 @@ public class Lab1 {
         System.out.println(inpUnits);
         System.out.println(inpWallDimensions);
         System.out.println(inpWaterPositions);
+        System.out.println();
+
+        // for (Map.Entry<Integer, ArrayList<Integer>> entry: inpWallDimensions.entrySet()) {
+        //     // System.out.println(entry.getKey());
+        //     // System.out.println(entry.getValue());
+
+        //     for(int a = 1; a <= inpUnits.get("L"); a++) {
+        //         if (entry.getValue().contains(a)) {
+        //             System.out.print("X");
+        //             System.out.print(" ");
+        //         } else {
+        //             System.out.print("-");
+        //             System.out.print(" ");
+        //         }
+        //     }
+        //     System.out.println();
+        // }
+
+        // for (Map.Entry<Integer, ArrayList<Integer>> entry: inpWallDimensions.entrySet()) {
+        //     // System.out.println(entry.getKey());
+        //     // System.out.println(entry.getValue());
+
+        //     for(int a = 1; a <= inpUnits.get("L"); a++) {
+        //         if (entry.getValue().contains(a)) {
+        //             System.out.print("X");
+        //             System.out.print(" ");
+        //         } else {
+        //             System.out.print("-");
+        //             System.out.print(" ");
+        //         }
+        //     }
+        //     System.out.println();
+        // }
 
         out.close();
     }
