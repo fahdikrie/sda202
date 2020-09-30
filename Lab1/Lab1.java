@@ -17,7 +17,7 @@ public class Lab1 {
 
         // Getting the N-rows dimension of the wall
         int nRow = 1;
-        Map<Integer, ArrayList<Integer>> inpOuterDimensions = new HashMap<Integer, ArrayList<Integer>>();
+        Map<Integer, ArrayList<Integer>> inpWallDimensions = new HashMap<Integer, ArrayList<Integer>>();
         // First layer of iteration, iterate by N-operations
         for (int i = 0; i < inpUnits.get("N"); i++) {
             int a = in.nextInt();
@@ -34,14 +34,22 @@ public class Lab1 {
                 };
 
                 // Add input to map using nRow as Key, and inpRowDimensions as Value
-                inpOuterDimensions.put(nRow, inpRowDimensions);
+                inpWallDimensions.put(nRow, inpRowDimensions);
                 nRow++;
-            }
+            };
+        };
 
+        // Getting the Q-number of waterfall cases
+        // Map<String, Integer> inpUnits = new HashMap<String, Integer>();
+        ArrayList<Integer> inpWaterPositions = new ArrayList<Integer>();
+        // Iterate by the nums of Q to get the x value of where the water will start flowing
+        for (int i = 0; i < inpUnits.get("Q"); i++) {
+            inpWaterPositions.add(in.nextInt());
         };
 
         System.out.println(inpUnits);
-        System.out.println(inpOuterDimensions);
+        System.out.println(inpWallDimensions);
+        System.out.println(inpWaterPositions);
 
         out.close();
     }
