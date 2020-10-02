@@ -16,7 +16,6 @@ public class Lab1 {
         };
 
         // Getting the N-rows dimension of the wall
-        // int nRow = 1;
         Map<Integer, ArrayList<Integer>> inpWallDimensions = new HashMap<Integer, ArrayList<Integer>>();
         // First layer of iteration, iterate by N-operations
         for (int i = 0; i < inpUnits.get("N"); i++) {
@@ -24,15 +23,16 @@ public class Lab1 {
             int b = in.nextInt();
             int K = in.nextInt();
 
+            // Create temporary integer to get the values of a
+            ArrayList<Integer> temp = new ArrayList<Integer>();
+            // Append values inbetween a & b to temp
+            for (int val = a; val <= b; val++) {
+                temp.add(val);
+            };
+
             // Second layer of iteration, iterate by L-length (or width)
             for (int j = 1; j <= inpUnits.get("L"); j++) {
                 ArrayList<Integer> inpColumnDimensions = new ArrayList<Integer>();
-                ArrayList<Integer> temp = new ArrayList<Integer>();
-
-                // Append values inbetween a & b to temp
-                for (int val = a; val <= b; val++) {
-                    temp.add(val);
-                };
 
                 // Third layer of iteration, iterate by K-rows
                 for (int k = 0; k < K; k++) {
@@ -51,7 +51,7 @@ public class Lab1 {
             };
         };
 
-        // Getting the Q-ntempRightHeightumber of waterfall cases
+        // Getting the Q-number of waterfall cases
         ArrayList<Integer> inpWaterPositions = new ArrayList<Integer>();
         // Iterate by the nums of Q to get the x value of where the water will start flowing
         for (int i = 0; i < inpUnits.get("Q"); i++) {
