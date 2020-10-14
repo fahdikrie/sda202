@@ -5,7 +5,7 @@ public class LadangBobaIzuri {
     static InputReader in;
     static PrintWriter out;
     static int[] ladang;
-    static Map<String, ArrayList<Integer>> keranjang;
+    static Map<String, int[]> keranjang;
     static Queue<String> izurisQuery;
     static Queue<String> visitorsQuery;
     static int[] availableServices;
@@ -24,21 +24,35 @@ public class LadangBobaIzuri {
         // Third part of input; asks how many days will the harvests take place, represented as H
         int H = inputHari();
 
-        System.out.println();
-        System.out.println(N);
-        System.out.println(M);
-        System.out.println(H);
-        System.out.println(Arrays.toString(ladang));
-        System.out.println(keranjang);
-        System.out.println(izurisQuery);
-        System.out.println(izurisQuery.poll());
-        System.out.println(izurisQuery);
-        System.out.println(izurisQuery.poll());
-        System.out.println(visitorsQuery);
-        System.out.println(visitorsQuery.poll());
-        System.out.println(visitorsQuery);
-        System.out.println(visitorsQuery.poll());
-        System.out.println(Arrays.toString(availableServices));
+        // Input-processing part;
+        for (int i = 1; i <= H; i++) {
+            harvestDay(i);
+            System.out.println("TODAY IS DAY-" + i);
+            System.out.println(keranjang.keySet());
+            keranjang.values().forEach(n -> System.out.print(Arrays.toString(n) + " "));
+            System.out.println();
+            System.out.println(izurisQuery);
+            System.out.println(visitorsQuery);
+            System.out.println();
+        }
+
+
+        // System.out.println();
+        // System.out.println(N);
+        // System.out.println(M);
+        // System.out.println(H);
+        // System.out.println(Arrays.toString(ladang));
+        // System.out.println(keranjang);
+        // System.out.println(Arrays.toString(keranjang.get("KRJ2")));
+        // System.out.println(izurisQuery);
+        // System.out.println(izurisQuery.poll());
+        // System.out.println(izurisQuery);
+        // System.out.println(izurisQuery.poll());
+        // System.out.println(visitorsQuery);
+        // System.out.println(visitorsQuery.poll());
+        // System.out.println(visitorsQuery);
+        // System.out.println(visitorsQuery.poll());
+        // System.out.println(Arrays.toString(availableServices));
 
         out.close();
     }
@@ -66,9 +80,7 @@ public class LadangBobaIzuri {
             int Ci = in.nextInt();
             int Fi = in.nextInt();
 
-            ArrayList<Integer> keranjangDetails = new ArrayList<>();
-            keranjangDetails.add(Integer.valueOf(Ci));
-            keranjangDetails.add(Integer.valueOf(Fi));
+            int[] keranjangDetails = {Ci, Fi};
 
             // append S, C, and F into Hashmap, with S as keys
             keranjang.put(Si, keranjangDetails);
@@ -110,43 +122,69 @@ public class LadangBobaIzuri {
         switch(query) {
             case "ADD":
                 // param { S, C', F' }
-                String Sc = in.next(); // name
-                int Cc = in.nextInt(); // default capacity
-                int Fc = in.nextInt(); // enlargment capability
+                String addS = in.next(); // name
+                int addC = in.nextInt(); // default capacity
+                int addF = in.nextInt(); // enlargment capability
 
                 // add param to queue
                 if (subject == "IZURI") {
-                    izurisQuery.add("ADD " + Sc + " " + Cc + " " + Fc);
+                    izurisQuery.add(
+                        subject + " ADD " +
+                        addS + " " +
+                        addC + " " +
+                        addF
+                    );
                 } else {
-                    visitorsQuery.add(subject + " ADD " + Sc + " " + Cc + " " + Fc);
+                    visitorsQuery.add(
+                        subject + " ADD " +
+                        addS + " " +
+                        addC + " " +
+                        addF
+                    );
                 }
 
                 break;
 
             case "SELL":
                 // param { S }
-                String S = in.next(); // name
+                String sellS = in.next(); // name
 
                 // add param to queue
                 if (subject == "IZURI") {
-                    izurisQuery.add("SELL " + S);
+                    izurisQuery.add(
+                        subject + " SELL " +
+                        sellS
+                    );
                 } else {
-                    visitorsQuery.add(subject + " SELL " + S);
+                    visitorsQuery.add(
+                        subject + " SELL " +
+                        sellS
+                    );
                 }
 
                 break;
 
             case "UPDATE":
                 // param { S, C', F' }
-                String Si = in.next(); // name
-                int Ci = in.nextInt(); // default capacity
-                int Fi = in.nextInt(); // enlargment capability
+                String updateS = in.next(); // name
+                int updateC = in.nextInt(); // default capacity
+                int updateF = in.nextInt(); // enlargment capability
 
                 // add param to queue
                 if (subject == "IZURI") {
-                    izurisQuery.add("UPDATE " + Si + " " + Ci + " " + Fi);
+                    izurisQuery.add(
+                        subject + " UPDATE " +
+                        updateS + " " +
+                        updateC + " " +
+                        updateF
+                    );
                 } else {
-                    visitorsQuery.add(subject + " UPDATE " + Si + " " + Ci + " " + Fi);
+                    visitorsQuery.add(
+                        subject + " UPDATE " +
+                        updateS + " " +
+                        updateC + " " +
+                        updateF
+                    );
                 }
 
                 break;
@@ -158,11 +196,116 @@ public class LadangBobaIzuri {
 
                 // add param to queue
                 if (subject == "IZURI") {
-                    izurisQuery.add("RENAME " + oldS + " " + newS);
+                    izurisQuery.add(
+                        subject + " RENAME " +
+                        oldS + " " +
+                        newS
+                    );
                 } else {
-                    visitorsQuery.add(subject + " RENAME " + oldS + " " + newS);
+                    visitorsQuery.add(
+                        subject + " RENAME " +
+                        oldS + " " +
+                        newS
+                    );
                 }
 
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    public static void harvestDay(int day) {
+        // print header "Hari ke-..." for each day
+        System.out.println("Hari ke-" + day + ":");
+
+        // check whether is it the first day of harvest or not
+        if (day != 1) {
+            // if it isn't the first day, handle services for izuki & visitors
+            handleServices(day);
+        }
+    }
+
+    public static void handleServices(int day) {
+        // print header "Permintaan yang dilayani"
+        System.out.println("Permintaan yang dilayani");
+        // Get the value of today's available services
+        int availableService = availableServices[day - 2];
+
+        // Iterate by the number of today's available services
+        for (int i = 0; i < availableService; i++) {
+            // poll query and then split it to array of string
+            String[] service = visitorsQuery.poll().split(" ");
+            // parse name from splitted query
+            String name = service[0];
+            // printout name
+            System.out.print(name + " ");
+            // then proceed to handle the query by passing the splitted query as param
+            handleQuery(service);
+        }
+
+        // print "IZURI" since izuri's requests are always being handled everyday
+        System.out.println("IZURI");
+
+        // handle izuri's request
+        String[] service = izurisQuery.poll().split(" ");
+        handleQuery(service);
+    }
+
+    public static void handleQuery(String[] query) {
+        switch(query[1]) {
+            case "ADD":
+                // parse the necessary information from query
+                String addS = query[2]; // name
+                int addC = Integer.valueOf(query[3]); // default capacity
+                int addF = Integer.valueOf(query[4]); // enlargement capability
+
+                // check whether addS (nama keranjang) exists already or not
+                if (keranjang.containsKey(addS)) break;
+
+                // if not, put addS keranjang and its value to hashmap
+                int[] add = {addC, addF};
+                keranjang.put(addS, add);
+                break;
+
+            case "SELL":
+                // parse the necessery information from query
+                String sellS = query[2]; // name
+
+                // check whether addS (nama keranjang) is exist
+                if (!keranjang.containsKey(sellS)) break;
+
+                // if sellS exists, proceed to delete sellS from hashmap
+                keranjang.remove(sellS);
+                break;
+
+            case "UPDATE":
+                // parse the necessary information from query
+                String updateS = query[2]; // name
+                int updateC = Integer.valueOf(query[3]); // default capacity
+                int updateF = Integer.valueOf(query[4]); // enlargement capability
+
+                // check whether updateS (nama keranjang) is exist
+                if (!keranjang.containsKey(updateS)) break;
+
+                // if updateS exists, update the value of updateS on hashmap
+                int[] update = {updateC, updateF};
+                keranjang.put(updateS, update);
+                break;
+
+            case "RENAME":
+                // parse the necessary information from query
+                String oldS = query[2]; // old name
+                String newS = query[3]; // new name
+
+                // check whether oldS (nama keranjang) is exist
+                if (!keranjang.containsKey(oldS)) break;
+
+                // if oldS exists, change the key name by removing the old ones & putting the new key-value
+                int[] value = keranjang.get(oldS);
+                keranjang.remove(oldS);
+                keranjang.put(newS, value);
                 break;
 
             default:
