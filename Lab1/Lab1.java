@@ -9,36 +9,29 @@ public class Lab1 {
         // Getting the first row input (according to the problem)
         // Which consists of the variables L, N, & Q
         String[] units = {"L", "N", "Q"};
-        Map<String, Integer> inpUnits = new HashMap<String, Integer>();
+        Map<String, Integer> inpUnits = new HashMap<>();
         for (int i = 0; i < 3; i++) {
             // Add input to map using units as Key, and input as Value
             inpUnits.put(units[i], in.nextInt());
         };
 
         // Getting the N-rows dimension of the wall
-        Map<Integer, ArrayList<Integer>> inpWallDimensions = new HashMap<Integer, ArrayList<Integer>>();
+        Map<Integer, ArrayList<Integer>> inpWallDimensions = new HashMap<>();
         // First layer of iteration, iterate by N-operations
         for (int i = 0; i < inpUnits.get("N"); i++) {
             int a = in.nextInt();
             int b = in.nextInt();
             int K = in.nextInt();
 
-            // Create temporary integer to get the values of a
-            ArrayList<Integer> temp = new ArrayList<Integer>();
-            // Append values inbetween a & b to temp
-            for (int val = a; val <= b; val++) {
-                temp.add(val);
-            };
-
             // Second layer of iteration, iterate by L-length (or width)
             for (int j = 1; j <= inpUnits.get("L"); j++) {
-                ArrayList<Integer> inpColumnDimensions = new ArrayList<Integer>();
+                ArrayList<Integer> inpColumnDimensions = new ArrayList<>();
 
                 // Third layer of iteration, iterate by K-rows
                 for (int k = 0; k < K; k++) {
-                    if (temp.contains(j)) {
+                    if (a <= j && j <= b) {
                         inpColumnDimensions.add(j);
-                    }
+                    };
                 };
 
                 // Check if key J is already on hashmap
@@ -52,7 +45,7 @@ public class Lab1 {
         };
 
         // Getting the Q-number of waterfall cases
-        ArrayList<Integer> inpWaterPositions = new ArrayList<Integer>();
+        ArrayList<Integer> inpWaterPositions = new ArrayList<>();
         // Iterate by the nums of Q to get the x value of where the water will start flowing
         for (int i = 0; i < inpUnits.get("Q"); i++) {
             inpWaterPositions.add(in.nextInt());
