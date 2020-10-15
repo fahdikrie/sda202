@@ -9,6 +9,7 @@ public class LadangBobaIzuri {
     static Queue<String> izurisQuery;
     static Queue<String> visitorsQuery;
     static int[] availableServices;
+    static ArrayList<String> results;
 
     public static void main(String[] args) {
         // Instantiate I/O object instances
@@ -294,6 +295,8 @@ public class LadangBobaIzuri {
     }
 
     public static void handleHarvest(int day, int N, int M, int H) {
+        results = new ArrayList<>();
+
         // method for handling for the dth day's harvest
         for (Map.Entry<String, int[]> entry : keranjang.entrySet()) {
             // parse informations for each keranjang from hashmap
@@ -353,10 +356,133 @@ public class LadangBobaIzuri {
                 C += F;
             }
 
-            System.out.println(S + " " + harvestedBobas);
+            results.add(S + " " + harvestedBobas);
+            // System.out.println(S + " " + harvestedBobas);
             // for (int[] is : DP) {
-            //     System.out.println(Arrays.toString(is));
+                //     System.out.println(Arrays.toString(is));
             // }
+        }
+        // handleSort(results, results.size());
+        handleSort(results, 0, results.size() - 1);
+        for (String string : results) {
+            System.out.println(string);
+        }
+    }
+
+    // public static void handleSort(ArrayList<String> arr, int n) {
+    public static void handleSort(ArrayList<String> arr, int left, int right) {
+        // if (n < 2) return;
+
+        // int middle = n / 2;
+        // ArrayList<String> left = new ArrayList<>(middle);
+        // ArrayList<String> right = new ArrayList<>(n - middle);
+
+        // for (int i = 0; i < middle; i++) {
+        //     left.set(i, arr.get(i));
+        // }
+
+        // for (int i = middle; i < n; i++) {
+        //     right.set(i, arr.get(i));
+        // }
+
+        // handleSort(left, middle);
+        // handleSort(right, n - middle);
+        // handleMergeSort(arr, left, right, middle, n - middle);
+
+        if (left < right) {
+            int middle = (left + right) / 2;
+            handleSort(arr, left, middle);
+            handleSort(arr, middle + 1, right);
+            handleMergeSort(arr, left, middle, right);
+        }
+    }
+
+    // public static void handleMergeSort(ArrayList<String> arr, ArrayList<String> left, ArrayList<String> right, int l, int r) {
+    public static void handleMergeSort(ArrayList<String> arr, int left, int middle, int right) {
+
+        // int ii = 0, jj = 0, kk = 0;
+        // while (ii < l && jj < r) {
+        //     String leftString = left.get(ii);
+        //     String leftName = leftString.split(" ")[0];
+        //     int leftBoba = Integer.valueOf(leftString.split(" ")[1]);
+        //     String rightString = right.get(ii);
+        //     String rightName = rightString.split(" ")[0];
+        //     int rightBoba = Integer.valueOf(rightString.split(" ")[1]);
+
+        //     if (leftBoba < rightBoba) {
+        //         arr.set(kk++, left.get(ii++));
+        //     } else if (leftBoba > rightBoba) {
+        //         arr.set(kk++, right.get(ii++));
+        //     } else {
+        //         if (leftName.compareTo(rightName) < 0) {
+        //             arr.set(kk++, left.get(ii++));
+        //         } else {
+        //             arr.set(kk++, right.get(ii++));
+        //         }
+        //     }
+        // }
+
+        // while (ii < l) {
+        //     arr.set(kk++, left.get(ii++));
+        // }
+
+        // while (jj < r) {
+        //     arr.set(kk++, right.get(jj++));
+        // }
+
+        int leftN = middle - left + 1;
+        int rightN = right - middle;
+
+        int[] leftBobas = new int[leftN];
+        int[] rightBobas = new int[rightN];
+        String[] leftNames = new String[leftN];
+        String[] rightNames = new String[rightN];
+
+        for (int i = 0; i < leftN; ++i) {
+            leftBobas[i] = Integer.valueOf(arr.get(left + i).split(" ")[1]);
+            leftNames[i] = arr.get(left + i).split(" ")[0];
+        }
+
+        for (int i = 0; i < rightN; ++i) {
+            rightBobas[i] = Integer.valueOf(arr.get(middle + 1 + i).split(" ")[1]);
+            rightNames[i] = arr.get(middle + 1 + i).split(" ")[0];
+        }
+
+        // System.out.println(Arrays.toString(leftBobas));
+        // System.out.println(Arrays.toString(rightBobas));
+        // System.out.println(Arrays.toString(leftNames));
+        // System.out.println(Arrays.toString(rightNames));
+
+        int ii = 0, jj = 0, kk = 0;
+        while (ii < leftN && jj < rightN) {
+            if (leftBobas[ii] > rightBobas[jj]) {
+                arr.set(kk, leftNames[ii] + " " + leftBobas[ii]);
+                ii++;
+            } else if (leftBobas[ii] < rightBobas[jj]) {
+                arr.set(kk, rightNames[jj] + " " + rightBobas[jj]);
+                jj++;
+            } else {
+                if (leftNames[ii].compareTo(rightNames[jj]) < 0) {
+                    arr.set(kk, leftNames[ii] + " " + leftBobas[ii]);
+                    ii++;
+                } else {
+                    arr.set(kk, rightNames[jj] + " " + rightBobas[jj]);
+                    jj++;
+                }
+            }
+            kk++;
+        }
+
+        while (ii < leftN) {
+            arr.set(kk, leftNames[ii] + " " + leftBobas[ii]);
+            ii++;
+            kk++;
+        }
+
+        while (jj < rightN) {
+            arr.set(kk, rightNames[jj] + " " + rightBobas[jj]);
+            jj++;
+            kk++;
         }
     }
 
