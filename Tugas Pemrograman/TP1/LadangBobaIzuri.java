@@ -26,33 +26,8 @@ public class LadangBobaIzuri {
 
         // Input-processing part;
         for (int i = 1; i <= H; i++) {
-            harvestDay(i);
-            System.out.println("TODAY IS DAY-" + i);
-            System.out.println(keranjang.keySet());
-            keranjang.values().forEach(n -> System.out.print(Arrays.toString(n) + " "));
-            System.out.println();
-            System.out.println(izurisQuery);
-            System.out.println(visitorsQuery);
-            System.out.println();
+            harvestDay(i, N, M, H);
         }
-
-
-        // System.out.println();
-        // System.out.println(N);
-        // System.out.println(M);
-        // System.out.println(H);
-        // System.out.println(Arrays.toString(ladang));
-        // System.out.println(keranjang);
-        // System.out.println(Arrays.toString(keranjang.get("KRJ2")));
-        // System.out.println(izurisQuery);
-        // System.out.println(izurisQuery.poll());
-        // System.out.println(izurisQuery);
-        // System.out.println(izurisQuery.poll());
-        // System.out.println(visitorsQuery);
-        // System.out.println(visitorsQuery.poll());
-        // System.out.println(visitorsQuery);
-        // System.out.println(visitorsQuery.poll());
-        // System.out.println(Arrays.toString(availableServices));
 
         out.close();
     }
@@ -61,6 +36,7 @@ public class LadangBobaIzuri {
         // First part of input; asks how many ladangs are available as N
         int N = in.nextInt();
         ladang = new int[N];
+
         // Iterate by N-times, asking how many bobas are available on each ladang
         for (int i = 0; i < N; i++) {
             ladang[i] = in.nextInt();
@@ -74,6 +50,7 @@ public class LadangBobaIzuri {
         // Second part of input; asks how many starting keranjangs are available as M
         int M = in.nextInt();
         keranjang = new HashMap<>();
+
         // Iterate by M-times, asking the details of each keranjang
         for (int i = 0; i < M; i++) {
             String Si = in.next();
@@ -93,6 +70,7 @@ public class LadangBobaIzuri {
     public static int inputHari() {
         // Third part of input; asks how many days the harvests take place as H
         int H = in.nextInt();
+
         // Iterate by H-times, asking about queries for Izuri & other visitors
         izurisQuery = new ArrayDeque<>();
         visitorsQuery = new ArrayDeque<>();
@@ -114,6 +92,7 @@ public class LadangBobaIzuri {
             availableServices[i] = in.nextInt();
         }
 
+        System.out.println();
         // Returns H
         return H;
     }
@@ -142,7 +121,6 @@ public class LadangBobaIzuri {
                         addF
                     );
                 }
-
                 break;
 
             case "SELL":
@@ -161,7 +139,6 @@ public class LadangBobaIzuri {
                         sellS
                     );
                 }
-
                 break;
 
             case "UPDATE":
@@ -186,7 +163,6 @@ public class LadangBobaIzuri {
                         updateF
                     );
                 }
-
                 break;
 
             case "RENAME":
@@ -208,7 +184,6 @@ public class LadangBobaIzuri {
                         newS
                     );
                 }
-
                 break;
 
             default:
@@ -216,7 +191,7 @@ public class LadangBobaIzuri {
         }
     }
 
-    public static void harvestDay(int day) {
+    public static void harvestDay(int day, int N, int M, int H) {
         // print header "Hari ke-..." for each day
         System.out.println("Hari ke-" + day + ":");
 
@@ -225,6 +200,11 @@ public class LadangBobaIzuri {
             // if it isn't the first day, handle services for izuki & visitors
             handleServices(day);
         }
+
+        // print header "Hasil Panen"
+        System.out.println("Hasil Panen");
+        handleHarvest(day, N, M, H);
+        System.out.println();
     }
 
     public static void handleServices(int day) {
@@ -236,21 +216,21 @@ public class LadangBobaIzuri {
         // Iterate by the number of today's available services
         for (int i = 0; i < availableService; i++) {
             // poll query and then split it to array of string
-            String[] service = visitorsQuery.poll().split(" ");
+            String[] queryset = visitorsQuery.poll().split(" ");
             // parse name from splitted query
-            String name = service[0];
+            String name = queryset[0];
             // printout name
             System.out.print(name + " ");
             // then proceed to handle the query by passing the splitted query as param
-            handleQuery(service);
+            handleQuery(queryset);
         }
 
         // print "IZURI" since izuri's requests are always being handled everyday
         System.out.println("IZURI");
 
         // handle izuri's request
-        String[] service = izurisQuery.poll().split(" ");
-        handleQuery(service);
+        String[] queryset = izurisQuery.poll().split(" ");
+        handleQuery(queryset);
     }
 
     public static void handleQuery(String[] query) {
@@ -310,6 +290,73 @@ public class LadangBobaIzuri {
 
             default:
                 break;
+        }
+    }
+
+    public static void handleHarvest(int day, int N, int M, int H) {
+        // method for handling for the dth day's harvest
+        for (Map.Entry<String, int[]> entry : keranjang.entrySet()) {
+            // parse informations for each keranjang from hashmap
+            String S = entry.getKey();
+            int C = entry.getValue()[0];
+            int F = entry.getValue()[1];
+
+            int harvestedBobas = 0;
+            int[][] DP = new int[N][N + 1];
+            // iterate through the N-number of ladang
+            for (int i = 0; i < N; i++) {
+                int maxBobas = (
+                    (ladang[0] <= C)
+                        ? ladang[0]
+                        : 0
+                );
+
+                for (int j = i; j < N + 1; j++) {
+                    if (i == j) continue;
+
+                    // // kondisi kalau i == 0
+                    if (i == 0) {
+                        // int previousVal = DP[i][j - 1];
+                        // int previousBobas = ladang[j - 1];
+
+                        DP[i][j] = (
+                            // (previousVal + previousBobas <= C)
+                            //     ? previousVal + previousBobas
+                            //     : maxBobas
+                            maxBobas
+                        );
+
+                    } else {
+                        int previousVal = DP[i][j - 1];
+                        int previousRowVal = DP[i - 1][j - 1];
+                        int previousBobas = ladang[j - 1];
+
+                        DP[i][j] = (
+                            (previousVal + previousBobas >= previousRowVal)
+                                ? (previousBobas + previousVal <= C)
+                                    ? previousBobas + previousVal
+                                    : C
+                                : previousRowVal
+                        );
+
+                    }
+
+                    if (DP[i][j] > harvestedBobas) harvestedBobas = DP[i][j];
+
+                    if ((j < N) &&
+                        (ladang[j] > maxBobas) &&
+                        !(ladang[j] > C)) {
+                        maxBobas = ladang[j];
+                    }
+                }
+
+                C += F;
+            }
+
+            System.out.println(S + " " + harvestedBobas);
+            // for (int[] is : DP) {
+            //     System.out.println(Arrays.toString(is));
+            // }
         }
     }
 
