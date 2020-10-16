@@ -9,7 +9,6 @@ public class LadangBobaIzuri {
     static Queue<String> izurisQuery;
     static Queue<String> visitorsQuery;
     static int[] availableServices;
-    // static ArrayList<String> results;
     static String[] results;
 
     public static void main(String[] args) {
@@ -194,7 +193,7 @@ public class LadangBobaIzuri {
 
     public static void harvestDay(int day, int N, int M, int H) {
         // print header "Hari ke-..." for each day
-        System.out.println("Hari ke-" + day + ":");
+        out.println("Hari ke-" + day + ":");
 
         // check whether is it the first day of harvest or not
         if (day != 1) {
@@ -203,14 +202,14 @@ public class LadangBobaIzuri {
         }
 
         // print header "Hasil Panen"
-        System.out.println("Hasil Panen");
+        out.println("Hasil Panen");
         handleHarvest(day, N, M, H);
-        if (day != H) System.out.println();
+        if (day != H) out.println();
     }
 
     public static void handleServices(int day) {
         // print header "Permintaan yang dilayani"
-        System.out.println("Permintaan yang dilayani");
+        out.println("Permintaan yang dilayani");
         // Get the value of today's available services
         int availableService = availableServices[day - 2];
 
@@ -221,13 +220,13 @@ public class LadangBobaIzuri {
             // parse name from splitted query
             String name = queryset[0];
             // printout name
-            System.out.print(name + " ");
+            out.print(name + " ");
             // then proceed to handle the visitor's query by passing the splitted query as param
             handleQuery(queryset);
         }
 
         // print "IZURI" since izuri's requests are always being handled everyday
-        System.out.println("IZURI");
+        out.println("IZURI");
 
         // proceed to handle handle izuri's query
         String[] queryset = izurisQuery.poll().split(" ");
@@ -325,8 +324,17 @@ public class LadangBobaIzuri {
 
                     // different treatment when i == 0
                     if (i == 0) {
+                        // DP[i][j] = (
+                        //     maxBobas
+                        // );
+
+                        int previousVal = DP[i][j - 1];
+                        int previousBobas = ladang[j - 1];
+
                         DP[i][j] = (
-                            maxBobas
+                            (previousVal + previousBobas  <= C)
+                                ?   previousBobas + previousVal
+                                :   C
                         );
 
                     } else {
@@ -358,20 +366,17 @@ public class LadangBobaIzuri {
                 C += F;
             }
 
-            // add harvestedBobas after each iteration
-            // results.add(S + " " + harvestedBobas);
             results[index++] = S + " " + harvestedBobas;
         }
 
         // sort the current results immediately
-        // handleSort(results, results.size());
         handleSort(results, results.length);
-        // handleSort(results, 0, results.size() - 1);
         // then print each results after being sorted
         for (String string : results) {
-            System.out.println(string);
+            // System.out.println(string);
+            out.println(string);
         }
-        // System.out.println(Arrays.toString(results.toArray()));
+        out.flush();
     }
 
     public static void handleSort(String[] arr, int length) {
@@ -435,72 +440,6 @@ public class LadangBobaIzuri {
             arr[kk++] = right[jj++];
         }
     }
-
-    // public static voleftid handleSort(ArrayList<String> arr, int left, int right) {
-    //     // merge condition
-    //     if (left < right) {
-    //         int middle = (left + right) / 2;
-    //         handleSort(arr, left, middle);
-    //         handleSort(arr, middle + 1, right);
-    //         handleMergeSort(arr, left, middle, right);
-    //     }
-    // }
-
-
-    // public static void handleMergeSort(ArrayList<String> arr, int left, int middle, int right) {
-    //     int leftN = middle - left + 1;
-    //     int rightN = right - middle;
-
-    //     int[] leftBobas = new int[leftN];
-    //     int[] rightBobas = new int[rightN];
-    //     String[] leftNames = new String[leftN];
-    //     String[] rightNames = new String[rightN];
-
-    //     for (int i = 0; i < leftN; ++i) {
-    //         leftBobas[i] = Integer.valueOf(arr.get(left + i).split(" ")[1]);
-    //         leftNames[i] = arr.get(left + i).split(" ")[0];
-    //     }
-
-    //     for (int i = 0; i < rightN; ++i) {
-    //         rightBobas[i] = Integer.valueOf(arr.get(middle + 1 + i).split(" ")[1]);
-    //         rightNames[i] = arr.get(middle + 1 + i).split(" ")[0];
-    //     }
-
-    //     int ii = 0, jj = 0, kk = 0;
-    //     while (ii < leftN && jj < rightN) {
-    //         if (leftBobas[ii] > rightBobas[jj]) {
-    //             arr.set(kk, leftNames[ii] + " " + leftBobas[ii]);
-    //             ii++;
-    //             kk++;
-    //         } else if (leftBobas[ii] < rightBobas[jj]) {
-    //             arr.set(kk, rightNames[jj] + " " + rightBobas[jj]);
-    //             jj++;
-    //             kk++;
-    //         } else {
-    //             if (leftNames[ii].compareTo(rightNames[jj]) < 0) {
-    //                 arr.set(kk, leftNames[ii] + " " + leftBobas[ii]);
-    //                 ii++;
-    //                 kk++;
-    //             } else {
-    //                 arr.set(kk, rightNames[jj] + " " + rightBobas[jj]);
-    //                 jj++;
-    //                 kk++;
-    //             }
-    //         }
-    //     }
-
-    //     while (ii < leftN) {
-    //         arr.set(kk, leftNames[ii] + " " + leftBobas[ii]);
-    //         ii++;
-    //         kk++;
-    //     }
-
-    //     while (jj < rightN) {
-    //         arr.set(kk, rightNames[jj] + " " + rightBobas[jj]);
-    //         jj++;
-    //         kk++;
-    //     }
-    // }
 
     static class InputReader {
         public BufferedReader reader;
