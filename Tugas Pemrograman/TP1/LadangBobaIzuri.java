@@ -222,14 +222,14 @@ public class LadangBobaIzuri {
             String name = queryset[0];
             // printout name
             System.out.print(name + " ");
-            // then proceed to handle the query by passing the splitted query as param
+            // then proceed to handle the visitor's query by passing the splitted query as param
             handleQuery(queryset);
         }
 
         // print "IZURI" since izuri's requests are always being handled everyday
         System.out.println("IZURI");
 
-        // handle izuri's request
+        // proceed to handle handle izuri's query
         String[] queryset = izurisQuery.poll().split(" ");
         handleQuery(queryset);
     }
@@ -246,7 +246,7 @@ public class LadangBobaIzuri {
                 if (keranjang.containsKey(addS)) break;
 
                 // if not, put addS keranjang and its value to hashmap
-                int[] add = {addC, addF};
+                int[] add = new int[]{addC, addF};
                 keranjang.put(addS, add);
                 break;
 
@@ -281,7 +281,7 @@ public class LadangBobaIzuri {
                 String newS = query[3]; // new name
 
                 // check whether oldS (nama keranjang) is exist
-                if (!keranjang.containsKey(oldS)) break;
+                if (!keranjang.containsKey(oldS) || keranjang.containsKey(newS)) break;
 
                 // if oldS exists, change the key name by removing the old ones & putting the new key-value
                 int[] value = keranjang.get(oldS);
