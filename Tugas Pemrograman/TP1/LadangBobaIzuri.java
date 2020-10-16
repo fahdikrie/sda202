@@ -4,6 +4,7 @@ import java.util.*;
 public class LadangBobaIzuri {
     static InputReader in;
     static PrintWriter out;
+    static StringBuilder sb;
     static int[] ladang;
     static Map<String, int[]> keranjang;
     static Queue<String> izurisQuery;
@@ -115,6 +116,8 @@ public class LadangBobaIzuri {
 
     public static void inputQuery(String query, String subject) {
 
+        sb = new StringBuilder();
+
         switch(query) {
 
             case "ADD":
@@ -124,21 +127,19 @@ public class LadangBobaIzuri {
                 int addC = in.nextInt(); // default capacity
                 int addF = in.nextInt(); // enlargment capability
 
+                sb.append(subject)
+                  .append(" ADD ")
+                  .append(addS)
+                  .append(" ")
+                  .append(addC)
+                  .append(" ")
+                  .append(addF);
+
                 // add param to queue
                 if (subject == "IZURI") {
-                    izurisQuery.add(
-                        subject + " ADD " +
-                        addS + " " +
-                        addC + " " +
-                        addF
-                    );
+                    izurisQuery.add(sb.toString());
                 } else {
-                    visitorsQuery.add(
-                        subject + " ADD " +
-                        addS + " " +
-                        addC + " " +
-                        addF
-                    );
+                    visitorsQuery.add(sb.toString());
                 }
 
                 break;
@@ -148,17 +149,15 @@ public class LadangBobaIzuri {
                 // param { S }
                 String sellS = in.next(); // name
 
+                sb.append(subject)
+                  .append(" SELL ")
+                  .append(sellS);
+
                 // add param to queue
                 if (subject == "IZURI") {
-                    izurisQuery.add(
-                        subject + " SELL " +
-                        sellS
-                    );
+                    izurisQuery.add(sb.toString());
                 } else {
-                    visitorsQuery.add(
-                        subject + " SELL " +
-                        sellS
-                    );
+                    visitorsQuery.add(sb.toString());
                 }
 
                 break;
@@ -170,21 +169,19 @@ public class LadangBobaIzuri {
                 int updateC = in.nextInt(); // default capacity
                 int updateF = in.nextInt(); // enlargment capability
 
+                sb.append(subject)
+                  .append(" UPDATE ")
+                  .append(updateS)
+                  .append(" ")
+                  .append(updateC)
+                  .append(" ")
+                  .append(updateF);
+
                 // add param to queue
                 if (subject == "IZURI") {
-                    izurisQuery.add(
-                        subject + " UPDATE " +
-                        updateS + " " +
-                        updateC + " " +
-                        updateF
-                    );
+                    izurisQuery.add(sb.toString());
                 } else {
-                    visitorsQuery.add(
-                        subject + " UPDATE " +
-                        updateS + " " +
-                        updateC + " " +
-                        updateF
-                    );
+                    visitorsQuery.add(sb.toString());
                 }
 
                 break;
@@ -195,19 +192,17 @@ public class LadangBobaIzuri {
                 String oldS = in.next(); // old name
                 String newS = in.next(); // new name
 
+                sb.append(subject)
+                  .append(" RENAME ")
+                  .append(oldS)
+                  .append(" ")
+                  .append(newS);
+
                 // add param to queue
                 if (subject == "IZURI") {
-                    izurisQuery.add(
-                        subject + " RENAME " +
-                        oldS + " " +
-                        newS
-                    );
+                    izurisQuery.add(sb.toString());
                 } else {
-                    visitorsQuery.add(
-                        subject + " RENAME " +
-                        oldS + " " +
-                        newS
-                    );
+                    visitorsQuery.add(sb.toString());
                 }
 
                 break;
@@ -216,6 +211,8 @@ public class LadangBobaIzuri {
 
                 break;
         }
+
+        sb.setLength(0);
     }
 
     public static void harvestDay(int day, int N, int M, int H) {
@@ -223,7 +220,7 @@ public class LadangBobaIzuri {
         // print header "Hari ke-..." for each day
         out.println("Hari ke-" + day + ":");
 
-        // check whether is it the first day of harvest or not
+        // check whether it is the first day of harvest or not
         if (day != 1) {
             // if it isn't the first day, handle services for izuki & visitors
             handleServices(day);
@@ -407,14 +404,16 @@ public class LadangBobaIzuri {
 
             }
 
-            results[index++] = S + " " + harvestedBobas;
+            sb = new StringBuilder();
+            sb.append(S).append(" ").append(harvestedBobas);
+            results[index++] = sb.toString();
         }
 
         // sort the current results immediately
         handleSort(results, results.length);
 
         // then print each results after being sorted
-        StringBuilder sb = new StringBuilder();
+        sb = new StringBuilder();
         int counter = 0;
         for (String str : results) {
             sb.append(str);
