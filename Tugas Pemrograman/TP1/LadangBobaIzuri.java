@@ -36,8 +36,8 @@ public class LadangBobaIzuri {
         }
 
         out.print(sbOut);
+        sbOut.setLength(0);
         out.close();
-
     }
 
     public static int inputLadang() {
@@ -108,6 +108,7 @@ public class LadangBobaIzuri {
                 inputQuery(in.next(), name);
 
             }
+
             // Finally, asks for the number of available services for each day
             availableServices[i] = in.nextInt();
 
@@ -316,6 +317,11 @@ public class LadangBobaIzuri {
 
                 // check whether updateS (nama keranjang) is exist
                 if (!keranjang.containsKey(updateS)) break;
+
+                // check if the update value is the same as the current value
+                if (keranjang.get(updateS)[0] == updateC &&
+                    keranjang.get(updateS)[1] == updateF)
+                    break;
 
                 // if updateS exists, update the value of updateS on hashmap
                 int[] update = {updateC, updateF, -1};
