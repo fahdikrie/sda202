@@ -68,7 +68,7 @@ public class LadangBobaIzuri {
             int Ci = in.nextInt();
             int Fi = in.nextInt();
 
-            int[] keranjangDetails = {Ci, Fi};
+            int[] keranjangDetails = {Ci, Fi, -1};
 
             // append S, C, and F into Hashmap, with S as keys
             keranjang.put(Si, keranjangDetails);
@@ -290,7 +290,7 @@ public class LadangBobaIzuri {
                 if (keranjang.containsKey(addS)) break;
 
                 // if not, put addS keranjang and its value to hashmap
-                int[] add = {addC, addF};
+                int[] add = {addC, addF, -1};
                 keranjang.put(addS, add);
 
                 break;
@@ -319,7 +319,7 @@ public class LadangBobaIzuri {
                 if (!keranjang.containsKey(updateS)) break;
 
                 // if updateS exists, update the value of updateS on hashmap
-                int[] update = {updateC, updateF};
+                int[] update = {updateC, updateF, -1};
                 keranjang.put(updateS, update);
 
                 break;
@@ -348,6 +348,9 @@ public class LadangBobaIzuri {
 
     public static void handleHarvest(int N) {
 
+        // instantiate stringbuilder tp yg ini buat concate-concate
+        sb = new StringBuilder();
+
         // instantiate results array
         results = new String[keranjang.size()];
 
@@ -363,6 +366,18 @@ public class LadangBobaIzuri {
             String S = entry.getKey();
             int C = entry.getValue()[0];
             int F = entry.getValue()[1];
+            int maxPossibleBoba = entry.getValue()[2];
+
+            // check if maxBoba is defined (defined berarti bkn -1) or not
+            if (maxPossibleBoba != -1) {
+
+                // concat results using StringBuilder
+                sb.append(S).append(" ").append(maxPossibleBoba);
+                results[index++] = sb.toString();
+                sb.setLength(0);
+
+                continue;
+            }
 
             // using 2D array to store all possible panen using knapsack algorithm
             int[][] DP = new int[N][N + 1];
@@ -401,7 +416,10 @@ public class LadangBobaIzuri {
                     }
 
                     // checking the highest maximum possible bobas that can be harvested
-                    if (DP[i][j] > harvestedBobas) harvestedBobas = DP[i][j];
+                    if (DP[i][j] > harvestedBobas) {
+                        entry.getValue()[2] = DP[i][j];
+                        harvestedBobas = DP[i][j];
+                    }
 
                 }
 
@@ -411,9 +429,9 @@ public class LadangBobaIzuri {
             }
 
             // concat results using StringBuilder
-            sb = new StringBuilder();
             sb.append(S).append(" ").append(harvestedBobas);
             results[index++] = sb.toString();
+            sb.setLength(0);
 
             // reset the counter of harvested bobas
             harvestedBobas = 0;
