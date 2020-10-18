@@ -5,6 +5,7 @@ public class LadangBobaIzuri {
     static InputReader in;
     static PrintWriter out;
     static StringBuilder sb;
+    static StringBuilder sbOut;
     static int[] ladang;
     static Map<String, int[]> keranjang;
     static Queue<String> izurisQuery;
@@ -17,6 +18,7 @@ public class LadangBobaIzuri {
         // Instantiate I/O object instances
         in = new InputReader(System.in);
         out = new PrintWriter(System.out);
+        sbOut = new StringBuilder();
 
         // First part of input; asks how many ladangs are available, represented as N
         int N = inputLadang();
@@ -32,6 +34,7 @@ public class LadangBobaIzuri {
             harvestDay(i, N, M, H);
         }
 
+        out.print(sbOut);
         out.close();
 
     }
@@ -218,7 +221,9 @@ public class LadangBobaIzuri {
     public static void harvestDay(int day, int N, int M, int H) {
 
         // print header "Hari ke-..." for each day
-        out.println("Hari ke-" + day + ":");
+        sbOut.append("Hari ke-")
+             .append(day)
+             .append(":\n");
 
         // check whether it is the first day of harvest or not
         if (day != 1) {
@@ -227,18 +232,18 @@ public class LadangBobaIzuri {
         }
 
         // print header "Hasil Panen"
-        out.println("Hasil Panen");
+        sbOut.append("Hasil Panen\n");
         handleHarvest(N);
 
         // print newline at the end of each day
-        if (day != H) out.println();
+        if (day != H) sbOut.append("\n");
 
     }
 
     public static void handleServices(int day) {
 
         // print header "Permintaan yang dilayani"
-        out.println("Permintaan yang dilayani");
+        sbOut.append("Permintaan yang dilayani\n");
 
         // Get the value of today's available services
         int availableService = availableServices[day - 2];
@@ -253,7 +258,8 @@ public class LadangBobaIzuri {
             String name = queryset[0];
 
             // printout name
-            out.print(name + " ");
+            sbOut.append(name)
+                 .append(" ");
 
             // then proceed to handle the visitor's query by passing the splitted query as param
             handleQuery(queryset);
@@ -261,7 +267,7 @@ public class LadangBobaIzuri {
         }
 
         // print "IZURI" since izuri's requests are always being handled everyday
-        out.println("IZURI");
+        sbOut.append("IZURI\n");
 
         // proceed to handle handle izuri's query
         String[] queryset = izurisQuery.poll().split(" ");
@@ -348,15 +354,15 @@ public class LadangBobaIzuri {
         // method for handling for the dth day's harvest
         int index = 0;
 
+        // number of harvested bobas in a day
+        int harvestedBobas = 0;
+
         for (Map.Entry<String, int[]> entry : keranjang.entrySet()) {
 
             // parse informations for each keranjang from hashmap
             String S = entry.getKey();
             int C = entry.getValue()[0];
             int F = entry.getValue()[1];
-
-            // number of harvested bobas on that day
-            int harvestedBobas = 0;
 
             // using 2D array to store all possible panen using knapsack algorithm
             int[][] DP = new int[N][N + 1];
@@ -404,23 +410,24 @@ public class LadangBobaIzuri {
 
             }
 
+            // concat results using StringBuilder
             sb = new StringBuilder();
             sb.append(S).append(" ").append(harvestedBobas);
             results[index++] = sb.toString();
+
+            // reset the counter of harvested bobas
+            harvestedBobas = 0;
         }
 
         // sort the current results immediately
         handleSort(results, results.length);
 
         // then print each results after being sorted
-        sb = new StringBuilder();
         int counter = 0;
         for (String str : results) {
-            sb.append(str);
-            if (counter++ != results.length) sb.append("\n");
+            sbOut.append(str);
+            if (counter++ != results.length) sbOut.append("\n");
         }
-        out.print(sb);
-        out.flush();
     }
 
     public static void handleSort(String[] arr, int length) {
