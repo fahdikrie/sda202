@@ -18,6 +18,7 @@ public class LadangBobaIzuri {
         // Instantiate I/O object instances
         in = new InputReader(System.in);
         out = new PrintWriter(System.out);
+        sb = new StringBuilder();
         sbOut = new StringBuilder();
 
         // First part of input; asks how many ladangs are available, represented as N
@@ -118,8 +119,6 @@ public class LadangBobaIzuri {
     }
 
     public static void inputQuery(String query, String subject) {
-
-        sb = new StringBuilder();
 
         switch(query) {
 
@@ -348,13 +347,8 @@ public class LadangBobaIzuri {
 
     public static void handleHarvest(int N) {
 
-        // instantiate stringbuilder tp yg ini buat concate-concate
-        sb = new StringBuilder();
-
-        // instantiate results array
+        // instantiate results array and its index counter
         results = new String[keranjang.size()];
-
-        // method for handling for the dth day's harvest
         int index = 0;
 
         // number of harvested bobas in a day
