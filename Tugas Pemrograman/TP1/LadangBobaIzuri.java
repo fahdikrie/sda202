@@ -1,6 +1,17 @@
 import java.io.*;
 import java.util.*;
 
+/**
+* Acknowledgements
+* 1. Video penjelasan tabel knapsack versi boba
+*    yg buat ferika, tp di forward lewat altop
+* 2. Algo mergesort dari baeldung tp saya modif dikit
+*    https://www.baeldung.com/java-merge-sort
+* 3. Nambahin att maxboba di keranjang buat flag pas iterasi
+*    (disini implementasinya di value hashmap index kedua)
+*    diajarin sama fe
+*/
+
 public class LadangBobaIzuri {
     static InputReader in;
     static PrintWriter out;
@@ -377,6 +388,7 @@ public class LadangBobaIzuri {
                 sb.setLength(0);
 
                 continue;
+
             }
 
             // using 2D array to store all possible panen using knapsack algorithm
@@ -416,10 +428,7 @@ public class LadangBobaIzuri {
                     }
 
                     // checking the highest maximum possible bobas that can be harvested
-                    if (DP[i][j] > harvestedBobas) {
-                        entry.getValue()[2] = DP[i][j];
-                        harvestedBobas = DP[i][j];
-                    }
+                    if (DP[i][j] > harvestedBobas) harvestedBobas = DP[i][j];
 
                 }
 
@@ -427,6 +436,9 @@ public class LadangBobaIzuri {
                 C += F;
 
             }
+
+            // change the value of maxbobas inside hashmap to harvestedbobas
+            entry.getValue()[2] = harvestedBobas;
 
             // concat results using StringBuilder
             sb.append(S).append(" ").append(harvestedBobas);
@@ -440,15 +452,14 @@ public class LadangBobaIzuri {
         // sort the current results immediately
         handleSort(results, results.length);
 
-        // then print each results after being sorted
-        int counter = 0;
-        for (String str : results) {
-            sbOut.append(str);
-            if (counter++ != results.length) sbOut.append("\n");
-        }
     }
 
     public static void handleSort(String[] arr, int length) {
+
+        // append result to print immediately if the result only consists of 1 keranjang
+        if (results.length < 2) {
+            sbOut.append(results[0]).append("\n");
+        }
 
         // basecase condition
         if (length < 2) return;
@@ -474,6 +485,8 @@ public class LadangBobaIzuri {
 
         // initialize pointers for arr, left, and right arrays
         int ii = 0, jj = 0, kk = 0;
+
+        boolean flag = l + r == results.length || 1 == results.length;
 
         // start the while-loop using the condition below
         while (ii < l && jj < r) {
@@ -511,6 +524,13 @@ public class LadangBobaIzuri {
 
             }
 
+
+            // append result immediately if the condition meets
+            if (flag) {
+                sbOut.append(arr[kk - 1]);
+                if (kk - 1 != results.length) sbOut.append("\n");
+            };
+
         }
 
         // clean the leftover values on both left & right array
@@ -518,11 +538,23 @@ public class LadangBobaIzuri {
 
             arr[kk++] = left[ii++];
 
+            // append result immediately if the condition meets
+            if (flag) {
+                sbOut.append(arr[kk - 1]);
+                if (kk - 1 != results.length) sbOut.append("\n");
+            };
+
         }
 
         while (jj < r) {
 
             arr[kk++] = right[jj++];
+
+            // append result immediately if the condition meets
+            if (flag) {
+                sbOut.append(arr[kk - 1]);
+                if (kk - 1 != results.length);sbOut.append("\n");
+            };
 
         }
     }
