@@ -32,6 +32,9 @@ public class Lab2 {
         // convert String S to DLL
         handleStringToDLL(S);
 
+        pointer1.current = dll.head.next;
+        pointer2.current = dll.head.next;
+
         // iterate by Q-times
         for (int i = 0; i < Q; i++) {
 
@@ -225,7 +228,7 @@ public class Lab2 {
 
         public boolean hasPrev() {
 
-            return current.prev != null;
+            return current.prev != dll.head;
 
         }
 
