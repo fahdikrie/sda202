@@ -1,6 +1,12 @@
 import java.io.*;
 import java.util.*;
 
+/**
+* Acknowledgements
+* 1. Awalnya salah logic pointernya, karena pake dummy head & dummy tail
+*    Terus nanya gita, katanya dia ga pake dummy head trs saya coba bisa hihwiwhi
+*/
+
 public class Lab2 {
 
     private static InputReader in = new InputReader(System.in);
@@ -12,12 +18,8 @@ public class Lab2 {
     public static void main(String[] args) {
 
         dll = new DoubleLinkedList();
-        pointer1 = new DLLIterator(dll);
-        pointer2 = new DLLIterator(dll);
 
         handleInput();
-
-        handlePrintDLL(dll);
 
         out.close();
     }
@@ -32,8 +34,9 @@ public class Lab2 {
         // convert String S to DLL
         handleStringToDLL(S);
 
-        pointer1.current = dll.head.next;
-        pointer2.current = dll.head.next;
+        // instantiate pointer obj 1 & 2
+        pointer1 = new DLLIterator(dll);
+        pointer2 = new DLLIterator(dll);
 
         // iterate by Q-times
         for (int i = 0; i < Q; i++) {
@@ -46,10 +49,14 @@ public class Lab2 {
 
         }
 
+        // print out all the datas of every node
+        handlePrintDLL(dll);
+
     }
 
     public static void handleStringToDLL(String S) {
 
+        // convert string to doubly-linkedlist
         for (int i = 0; i < S.length(); i++) {
 
             dll.addNode(Character.toString(S.charAt(i)));
@@ -111,6 +118,7 @@ public class Lab2 {
                 int deleteP = in.nextInt();
 
                 if (pointer1.current == pointer2.current) {
+
                     if (deleteP == 1) {
                         pointer1.delete();
                         pointer2.current = pointer1.current;
@@ -118,11 +126,32 @@ public class Lab2 {
                         pointer2.delete();
                         pointer1.current = pointer2.current;
                     }
+
+                } else if (pointer1.current == pointer2.current.prev) {
+
+                    if (deleteP == 1) {
+                        pointer1.delete();
+                    } else {
+                        pointer2.delete();
+                        pointer1.current = pointer2.current;
+                    }
+
+                } else if (pointer2.current == pointer1.current.prev) {
+
+                    if (deleteP == 1) {
+                        pointer1.delete();
+                        pointer2.current = pointer1.current;
+                    } else {
+                        pointer2.delete();
+                    }
+
                 } else {
+
                     if (deleteP == 1)
                         pointer1.delete();
                     else
                         pointer2.delete();
+
                 }
 
                 break;
@@ -144,14 +173,16 @@ public class Lab2 {
 
     public static void handlePrintDLL(DoubleLinkedList dll) {
 
-        DLLNode node = dll.head.next;
+        DLLNode node = dll.head;
+        StringBuilder sb = new StringBuilder();
 
         while (node.next != null) {
-            out.print(node.element);
+            sb.append(node.element);
             node = node.next;
         }
 
-        out.println();
+        out.println(sb);
+        sb.setLength(0);
 
     }
 
@@ -167,9 +198,8 @@ public class Lab2 {
 
         public void addNode(String el) {
             if (head.next == null && tail.prev == null ) {
-                DLLNode newNode = new DLLNode(el, head, tail);
-                head.next = newNode;
-                tail.prev = newNode;
+                head = new DLLNode(el, null, tail);
+                tail.prev = head;
             } else {
                 tail.prev.next = new DLLNode(el, tail.prev, tail);
                 tail.prev = tail.prev.next;
@@ -203,20 +233,14 @@ public class Lab2 {
 
     static class DLLIterator {
 
-        protected static DoubleLinkedList list;
-        protected DLLNode current;
+        DoubleLinkedList list;
+        DLLNode current;
 
 
         public DLLIterator(DoubleLinkedList dll) {
 
             list = dll;
             current = dll.head;
-
-        }
-
-        public DLLIterator(List<String> anyList) throws ClassCastException{
-
-            this((DoubleLinkedList) anyList);
 
         }
 
@@ -228,7 +252,7 @@ public class Lab2 {
 
         public boolean hasPrev() {
 
-            return current.prev != dll.head;
+            return current.prev != null;
 
         }
 
@@ -252,10 +276,10 @@ public class Lab2 {
 
             if (current == dll.head) {
 
-                newNode = new DLLNode(A, current, current.next);
+                newNode = new DLLNode(A, null, dll.head);
 
-                current.next.prev = newNode;
-                current.next = newNode;
+                current.prev = newNode;
+                dll.head = newNode;
 
             } else if (current == dll.tail) {
 
@@ -266,10 +290,10 @@ public class Lab2 {
 
             } else {
 
-                newNode = new DLLNode(A, current.prev, current.next);
+                newNode = new DLLNode(A, current.prev, current);
 
                 current.prev.next = newNode;
-                current.next.prev = newNode;
+                current.prev = newNode;
 
             }
 
@@ -285,23 +309,39 @@ public class Lab2 {
 
             } else if (current == dll.tail) {
 
-                dll.tail.prev = current.prev.prev;
-                current.prev.prev.next = dll.tail;
+                if (current.prev.prev != null) {
+
+                    current.prev.prev.next = dll.tail;
+                    dll.tail.prev = current.prev.prev;
+
+                } else {
+
+                    dll.head.element = "";
+
+                }
 
             } else {
 
-                // current.prev = current.prev.prev;
-                // current.prev.next = current;
+                if (current.prev.prev != null) {
 
-                current.prev.next = current.next;
-                current.next.prev = current.prev;
-                current = current.next;
+                    current.prev.prev.next = current;
+                    current.prev = current.prev.prev;
+
+                } else {
+
+                    dll.head = current;
+                    dll.head.prev = null;
+
+                }
 
             }
 
         }
 
         public void swap(DLLIterator otherPointer) {
+
+            if (current.prev == null || otherPointer.current.prev == null)
+                return;
 
             String temp = current.prev.element;
             current.prev.element = otherPointer.current.prev.element;
