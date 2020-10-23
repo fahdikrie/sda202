@@ -47,18 +47,10 @@ public class Lab2 {
 
     public static void handleStringToDLL(String S) {
 
-        // DLLNode currentNode = dll.head;
-
         for (int i = 0; i < S.length(); i++) {
 
             dll.addNode(Character.toString(S.charAt(i)));
 
-            // currentNode = dll.insertAfter(currentNode, Character.toString(S.charAt(i)));
-
-            // if (i != S.length() - 1)
-            //     currentNode = dll.insertAfter(currentNode, Character.toString(S.charAt(i)));
-            // else
-            //     currentNode = dll.insertAfter(currentNode, Character.toString(S.charAt(i)));
         }
 
     }
@@ -66,28 +58,27 @@ public class Lab2 {
     public static void handleQuery(String query) {
 
         // handle each given query using switch case
-        switch(query) {
+        switch (query) {
 
             case "GESER_KANAN":
 
                 int rightP = in.nextInt();
 
-                if (rightP == 1) {
+                if (rightP == 1)
                     pointer1.next();
-                } else {
+                else
                     pointer2.next();
-                }
+
                 break;
 
             case "GESER_KIRI":
 
                 int leftP = in.nextInt();
 
-                if (leftP == 1) {
+                if (leftP == 1)
                     pointer1.prev();
-                } else {
+                else
                     pointer2.prev();
-                }
 
                 break;
 
@@ -95,10 +86,19 @@ public class Lab2 {
 
                 int writeP = in.nextInt();
 
-                if (writeP == 1) {
-                    pointer1.write(in.next());
+                if (pointer1.current == pointer2.current) {
+                    if (writeP == 1) {
+                        pointer1.write(in.next());
+                        pointer2.current = pointer1.current;
+                    } else {
+                        pointer2.write(in.next());
+                        pointer1.current = pointer2.current;
+                    }
                 } else {
-                    pointer2.write(in.next());
+                    if (writeP == 1)
+                        pointer1.write(in.next());
+                    else
+                        pointer2.write(in.next());
                 }
 
                 break;
@@ -107,10 +107,19 @@ public class Lab2 {
 
                 int deleteP = in.nextInt();
 
-                if (deleteP == 1) {
-                    pointer1.delete();
+                if (pointer1.current == pointer2.current) {
+                    if (deleteP == 1) {
+                        pointer1.delete();
+                        pointer2.current = pointer1.current;
+                    } else {
+                        pointer2.delete();
+                        pointer1.current = pointer2.current;
+                    }
                 } else {
-                    pointer1.delete();
+                    if (deleteP == 1)
+                        pointer1.delete();
+                    else
+                        pointer2.delete();
                 }
 
                 break;
@@ -123,10 +132,10 @@ public class Lab2 {
 
             default:
 
-
                 break;
 
         }
+
 
     }
 
@@ -135,9 +144,11 @@ public class Lab2 {
         DLLNode node = dll.head.next;
 
         while (node.next != null) {
-            System.out.println(node.element);
+            out.print(node.element);
             node = node.next;
         }
+
+        out.println();
 
     }
 
@@ -161,21 +172,6 @@ public class Lab2 {
                 tail.prev = tail.prev.next;
             }
         }
-
-        // public DLLNode insertAfter(DLLNode current, String el) {
-
-        //     if (current == null) return current;
-
-        //     DLLNode newNode = new DLLNode(el);
-        //     newNode.next = current.next;
-        //     newNode.prev = current;
-
-        //     if (newNode.next != null)
-        //         newNode.next.prev = newNode;
-
-        //     return newNode;
-
-        // }
 
     }
 
@@ -211,7 +207,7 @@ public class Lab2 {
         public DLLIterator(DoubleLinkedList dll) {
 
             list = dll;
-            current = dll.head.next;
+            current = dll.head;
 
         }
 
@@ -223,57 +219,82 @@ public class Lab2 {
 
         public boolean hasNext() {
 
-            return current.next != list.tail;
+            return current.next != null;
 
         }
 
         public boolean hasPrev() {
 
-            return current.prev != list.head;
+            return current.prev != null;
 
         }
 
-        public DLLNode next() {
+        public void next() {
 
-            if (this.hasNext()) {
+            if (this.hasNext())
                 current = current.next;
-            }
-
-            return current;
 
         }
 
-        public DLLNode prev() {
+        public void prev() {
 
-            if (this.hasPrev()) {
+            if (this.hasPrev())
                 current = current.prev;
-            }
-
-            return current;
-
-        }
-
-        public String retrieve() {
-
-            return current.element;
 
         }
 
         public void write(String A) {
 
-            DLLNode newNode = new DLLNode(A);
+            DLLNode newNode;
 
-            newNode.prev = current.prev;
-            newNode.next = current;
-            current.prev.next = newNode;
-            current.next.prev = newNode;
+            if (current == dll.head) {
+
+                newNode = new DLLNode(A, current, current.next);
+
+                current.next.prev = newNode;
+                current.next = newNode;
+
+            } else if (current == dll.tail) {
+
+                newNode = new DLLNode(A, current.prev, current);
+
+                current.prev.next = newNode;
+                current.prev = newNode;
+
+            } else {
+
+                newNode = new DLLNode(A, current.prev, current.next);
+
+                current.prev.next = newNode;
+                current.next.prev = newNode;
+
+            }
+
+            current = newNode.next;
 
         }
 
         public void delete() {
 
-            current.prev = current.prev.prev;
-            current.prev.next = current;
+            if (current == dll.head) {
+
+                return;
+
+            } else if (current == dll.tail) {
+
+                dll.tail.prev = current.prev.prev;
+                current.prev.prev.next = dll.tail;
+
+            } else {
+
+                // current.prev = current.prev.prev;
+                // current.prev.next = current;
+
+                current.prev.next = current.next;
+                current.next.prev = current.prev;
+                current = current.next;
+
+            }
 
         }
 
