@@ -5,6 +5,7 @@ import java.util.*;
 * Acknowledgements
 * 1. Awalnya salah logic pointernya, karena pake dummy head & dummy tail
 *    Terus nanya gita, katanya dia ga pake dummy head trs saya coba bisa hihwiwhi
+* 2. Kata radhi dari farah print pake Character aja, kalo String lemot
 */
 
 public class Lab2 {
@@ -59,7 +60,7 @@ public class Lab2 {
         // convert string to doubly-linkedlist
         for (int i = 0; i < S.length(); i++) {
 
-            dll.addNode(Character.toString(S.charAt(i)));
+            dll.addNode(Character.valueOf((S.charAt(i))));
 
         }
 
@@ -98,17 +99,17 @@ public class Lab2 {
 
                 if (pointer1.current == pointer2.current) {
                     if (writeP == 1) {
-                        pointer1.write(in.next());
+                        pointer1.write(Character.valueOf(in.next().charAt(0)));
                         pointer2.current = pointer1.current;
                     } else {
-                        pointer2.write(in.next());
+                        pointer2.write(Character.valueOf(in.next().charAt(0)));
                         pointer1.current = pointer2.current;
                     }
                 } else {
                     if (writeP == 1)
-                        pointer1.write(in.next());
+                        pointer1.write(Character.valueOf(in.next().charAt(0)));
                     else
-                        pointer2.write(in.next());
+                        pointer2.write(Character.valueOf(in.next().charAt(0)));
                 }
 
                 break;
@@ -196,7 +197,7 @@ public class Lab2 {
             tail = new DLLNode();
         }
 
-        public void addNode(String el) {
+        public void addNode(Character el) {
             if (head.next == null && tail.prev == null ) {
                 head = new DLLNode(el, null, tail);
                 tail.prev = head;
@@ -211,22 +212,22 @@ public class Lab2 {
 
     static class DLLNode {
 
-        String element;
+        Character element;
         DLLNode prev;
         DLLNode next;
 
-        public DLLNode(String el, DLLNode prev, DLLNode next) {
+        public DLLNode(Character el, DLLNode prev, DLLNode next) {
             this.element = el;
             this.prev = prev;
             this.next = next;
         }
 
-        public DLLNode(String element) {
+        public DLLNode(Character element) {
             this(element, null, null);
         }
 
         public DLLNode() {
-            this("");
+            this(Character.valueOf('\0'));
         }
 
     }
@@ -270,7 +271,7 @@ public class Lab2 {
 
         }
 
-        public void write(String A) {
+        public void write(Character A) {
 
             DLLNode newNode;
 
@@ -316,7 +317,7 @@ public class Lab2 {
 
                 } else {
 
-                    dll.head.element = "";
+                    dll.head.element = Character.valueOf('\0');
 
                 }
 
@@ -343,7 +344,7 @@ public class Lab2 {
             if (current.prev == null || otherPointer.current.prev == null)
                 return;
 
-            String temp = current.prev.element;
+            Character temp = current.prev.element;
             current.prev.element = otherPointer.current.prev.element;
             otherPointer.current.prev.element = temp;
 

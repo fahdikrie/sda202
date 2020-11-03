@@ -1,0 +1,97 @@
+# Nomor 1.
+Array mula-mula
+53 15 14 55 16 78 13 4 70 16 15 17
+
+Pivot adalah index pertama => 53.
+pointer left dimulai elemen leftmost => 53
+pointer right dimulai elemen rightmost => 17
+
+(l > r) => 53 swap 17, pivot di kanan  
+left++, left++, left++
+(l > r) => 55 swap 53, pivot di kiri
+right++
+(l > r) => 53 swap 15, pivot di kanan
+left++, left++
+(l > r) => 78 swap 53, pivot di kiri
+right++
+(l > r) => 53 swap 16, pivot di kanan
+left++, left++, left++
+(l > r) => 70 swap 53, pivot di kiri
+right++
+index l = index r
+
+sehingga, berdasarkan beberapa operasi barusan, array berubah menjadi:
+17 15 14 15 16 16 13 4 (53) 70 78 55  
+// pivot ditandai dengan kurung
+// bagian kanan seluruhnya sudah lebih besar/sama dengan daripada pivot
+// bagian kiri seluruhnya sudah lebih kecil/sama dengan daripada pivot
+
+==========================================================================
+
+# Nomor 2.
+a) Setelah method myFunc() dijalankan,
+
+// asumsi .val adalah variable instance dari obj Node yg menunjuk kpd value node
+
+i) jika list0 berisi {2, 1, 4, 5}
+- temp1.val = 4; temp2.val = 5; (line 9 terpenuhi, sehingga temp1.val menjadi 4, bukan 1)
+- maka list1 akan menjadi => list1 + {2, 1}, dan
+- maka list2 akan menjadi => list2 + {4, 5}
+
+ii) jika list0 berisi {2, 1, 4, 5, 0}
+- temp1.val = 4; temp2.val = null; (line 9 tidak terpenuhi, karena temp2 menunjuk kepada null address)
+- maka list1 akan menjadi => list1 + {2, 1}, dan
+- maka list2 akan menjadi => list2 + {4, 5, 0}
+
+b) Apa yang terjadi jika kondisi (temp2.next != null) dihilangkan?
+Akan terjadi error, karena pointer fast (temp2) bergeser sebanyak dua node/iterasi,
+sehingga membutuhkan address next milih node setelahnya. sehingga, apabila node setelahnya
+null, maka dalam mengakses address next milik node setelahnya akan error. 
+
+==========================================================================
+
+# Nomor 3.
+a) Jelaskan proses pengurutan array berdasarkan method misterySort!
+Pengurutan dilakukan dengan memanggil fungsi mysterySort secara rekursif,
+kemudian dilakukan pengurutan seperti Bubble Sort (yakni dalam satu for-loop, 
+akan ada elemen yang berada pada tempat semestinya). 
+
+Selanjutnya, dilakukan pemanggilan kepada fungsi misterySort dengan parameter n
+(arr.length) yang berkurang, karena satu elemen sudah menduduki posisi yang benar
+setelah diiterasi.
+
+Kompleksitas for-loop adalah O(N), dengan for-loop dioperasikan sebanyak pemanggilan
+misterySort() sebanyak N kali, sehingga kompleksitasnya adalah O(N^2). Best case
+misterySort berbeda dengan bubble sort karena tidak ada flag yang dapat menandakan
+bahwa elemen sudah terurut untuk menghindari iterasi yang tidak perlu. 
+
+b) Algoritma pengurutan apa yang memiliki ide kerja sama dengan misterySort?
+Algoritma pengurutan yang mirip adalah Bubble Sort. Karena, konsepnya adalah 
+melakukan operasi for-loop sebanyak N-kali (sesuai yang dijelaskan pada butir a)
+dimana pada setiap for-loop, akan dilakukan for-loop di dalamnya untuk mengurutkan elemen
+ke tempat semestinya.
+
+Perbedaan terletak pada for-loop luar pada Bubble Sort diubah mjd berupa pemanggilan
+fungsi rekursif pada misterySort.
+
+==========================================================================
+
+# Nomor 4.
+
+
+==========================================================================
+
+# Nomor 5.
+a) Output yang dikeluarkan:
+>> 1
+>> 4
+
+b) Penjelasan method1:
+method rekursif dengan basecase me-return param b apabila param a == 0;
+pemanggilan rekursif selanjutnya adalah b mod a. method ini dipanggil pada method2
+
+
+c) Penjelasan method2:
+method driver untuk method rekursif (method1), dimana didalamnya dilakukan iterasi
+untuk mencetak FPB dari seluruh elemen pada array
+
