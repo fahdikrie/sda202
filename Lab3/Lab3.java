@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.*;
-import java.lang.Math;
 
 public class Lab3 {
 
@@ -8,21 +7,24 @@ public class Lab3 {
     private static PrintWriter out = new PrintWriter(System.out);
     private static Tree stockTree;
     private static Tree distanceTree;
+    private static StringBuilder sbOut;
 
     public static void main(String[] args) {
         stockTree = new Tree();
         distanceTree = new Tree();
+        sbOut = new StringBuilder();
 
-        // TODO: process inputs
+        // DONE: process inputs
 
         int Q = in.nextInt();
         handleQuery(Q);
 
+        out.println(sbOut);
         out.flush();
     }
 
     static void handleQuery(int Q) {
-        for (int i = 0; i > Q; i++) {
+        for (int i = 0; i < Q; i++) {
             String query = in.next();
             processQuery(query);
         }
@@ -30,33 +32,91 @@ public class Lab3 {
 
     static void processQuery(String query) {
         // query type parsed using split method
-        String[] splittedQuery = query.split(" ");
 
-        switch (splittedQuery[0]) {
+        switch (query) {
             case "INSERT":
                 // parse the necessary attributes from query
-                String store = splittedQuery[1];
-                int stock = splittedQuery[2];
-                int distance = splittedQuery[3];
+                String insertStore = in.next();
+                int insertStock = in.nextInt();
+                int insertDistance = in.nextInt();
 
-                stockTree.insert(storeName, stock);
-                distanceTree.insert(storeName, distance);
+                stockTree.insert(insertStore, insertStock);
+                distanceTree.insert(insertStore, insertDistance);
+
+                // stockTree.printInOrder(stockTree.root);
+                // stockTree.printLevelOrder();
+
+                // out.println(stockTree.getTree());
+
+                // out.print("[");
+                // for (Integer[] child : stockTree.getChildren()) {
+                //     out.print(Arrays.toString(child) + " ");
+                // }
+                // out.println("]");
+
+                // stockTree.emptyTree();
+                // stockTree.emptyChildren();
+
+                // out.println("");
+                // out.flush();
+
+                // distanceTree.printInOrder(distanceTree.root);
+                // distanceTree.printLevelOrder();
+
+                // out.println(distanceTree.getTree());
+
+                // out.print("[");
+                // for (Integer[] child : distanceTree.getChildren()) {
+                //     out.print(Arrays.toString(child) + " ");
+                // }
+                // out.println("]");
+
+                // distanceTree.emptyTree();
+                // distanceTree.emptyChildren();
+
+                // out.println("");
+
 
                 break;
 
             case "STOK_MINIMAL":
+                // parse the necessary attributes from query
+                int minStock = in.nextInt();
+
+                sbOut.append(stockTree.countMinimal(minStock));
+                sbOut.append("\n");
+
                 break;
 
             case "JARAK_MAKSIMAL":
+                // parse the necessary attributes from query
+                int maxDistance = in.nextInt();
+
+                sbOut.append(distanceTree.countMaximal(maxDistance));
+                sbOut.append("\n");
+
                 break;
 
             case "TOKO_STOK":
+                // parse the necessary attributes from query
+                int searchStock = in.nextInt();
+
+                sbOut.append(stockTree.exists(searchStock));
+                sbOut.append("\n");
+
                 break;
 
             case "TOKO_JARAK":
+                // parse the necessary attributes from query
+                int searchDistance = in.nextInt();
+
+                sbOut.append(distanceTree.exists(searchDistance));
+                sbOut.append("\n");
+
                 break;
 
             default:
+
                 break;
         }
     }
@@ -91,6 +151,8 @@ public class Lab3 {
 
 class Tree {
     TreeNode root;
+    List<Integer> tree = new ArrayList<>();
+    List<Integer[]> children = new ArrayList<>();
 
     public void insert(String storeName, int value) {
         root = insertNode(root, storeName, value);
@@ -105,12 +167,12 @@ class Tree {
         if (value < node.value) {
             // insert node baru ke kiri root
             node.left = insertNode(node.left, storeName, value);
-            node.setLeftCount(node.leftCount++);
+            node.setLeftCount(node.getLeftCount() + 1);
             // kondisi kalo value lebih besar dari root/subroot
         } else if (value > node.value) {
             // insert node baru ke kanan root
             node.right = insertNode(node.right, storeName, value);
-            node.setRightCount(node.rightCount++);
+            node.setRightCount(node.getRightCount() + 1);
         }
 
         // abis recursive call, update lg heightnya
@@ -131,7 +193,7 @@ class Tree {
         // kalo > 1, berarti tinggi kiri > kanan
         } else if (heightDiff > 1) {
             // cek lagi node-nya
-            if (value < node.left.value) {
+            if (value > node.left.value) {
                 node.left = leftRotate(node.left);
                 return rightRotate(node);
             } else {
@@ -147,7 +209,15 @@ class Tree {
         // DONE: implement right rotation
 
         TreeNode sub = pivot.left;
+        if (sub == null) return sub;
+
         TreeNode subRight = sub.right;
+        int subRightCount = (
+            (subRight != null)
+                ? subRight.getTotalCount()
+                : 0
+        );
+
 
         sub.right = pivot;
         pivot.left = subRight;
@@ -155,17 +225,24 @@ class Tree {
         pivot.setHeight(1 + max(height(pivot.left), height(pivot.right)));
         sub.setHeight(1 + max(height(sub.left), height(sub.right)));
 
-        pivot.setLeftCount(subRight.getRightCount());
+        pivot.setLeftCount(subRightCount);
         sub.setRightCount(pivot.getTotalCount());
 
-        return x;
+        return sub;
     }
 
     private TreeNode leftRotate(TreeNode pivot) {
         // DONE: implement left rotation
 
         TreeNode sub = pivot.right;
+        if (sub == null) return sub;
+
         TreeNode subLeft = sub.left;
+        int subLeftCount = (
+            (subLeft != null)
+                ? subLeft.getTotalCount()
+                : 0
+        );
 
         sub.left = pivot;
         pivot.right = subLeft;
@@ -173,10 +250,10 @@ class Tree {
         pivot.setHeight(1 + max(height(pivot.left), height(pivot.right)));
         sub.setHeight(1 + max(height(sub.left), height(sub.right)));
 
-        pivot.setRightCount(subLeft.getLeftCount());
+        pivot.setRightCount(subLeftCount);
         sub.setLeftCount(pivot.getTotalCount());
 
-        return y;
+        return sub;
     }
 
     public TreeNode search(int value) {
@@ -226,6 +303,51 @@ class Tree {
 
         return height(N.left) - height(N.right);
     }
+
+    public void printInOrder(TreeNode N) {
+        if (N == null) return;
+
+        printInOrder(N.left);
+
+        tree.add(N.value);
+        children.add(new Integer[]{N.getLeftCount(), N.getRightCount()});
+
+        printInOrder(N.right);
+    }
+
+    public void printLevelOrder() {
+        for (int i = 1; i <= root.height; i++) {
+            printGivenLevel(root, i);
+        }
+    }
+
+    public void printGivenLevel(TreeNode N, int level) {
+        if (N == null) return;
+
+        if (level == 1) {
+            tree.add(N.value);
+            children.add(new Integer[]{N.getLeftCount(), N.getRightCount()});
+        } else if (level > 1) {
+            printGivenLevel(N.left, level - 1);
+            printGivenLevel(N.right, level - 1);
+        }
+    }
+
+    public List<Integer> getTree() {
+        return tree;
+    }
+
+    public List<Integer[]> getChildren() {
+        return children;
+    }
+
+    public void emptyTree() {
+        this.tree.clear();
+    }
+
+    public void emptyChildren() {
+        this.children.clear();
+    }
 }
 
 class TreeNode {
@@ -246,30 +368,48 @@ class TreeNode {
     }
 
     public TreeNode(String storeName, int value) {
-        TreeNode(storeName, value, null, null);
+        this(storeName, value, null, null);
     }
 
     public int countMinimal(int min) {
-        // TODO: get count of nodes with at least value min recursively
+        // DONE: get count of nodes with at least value min recursively
 
+        // min < this.value
+        if (this.value > min) {
+            if (left != null) {
+                return 1 + this.getRightCount() + this.left.countMinimal(min);
+            }
+        } else if (this.value < min) {
+            if (right != null) {
+                return this.right.countMinimal(min);
+            } else {
+                return 0;
+            }
+        }
 
-        return 0;
+        // kalo min = this.value/root.value, langsung ambil kanannya aja
+        return 1 + this.getRightCount();
     }
 
     public int countMaximal(int max) {
-        // TODO: get count of nodes with at most value max recursively
+        // DONE: get count of nodes with at most value max recursively
 
-        if (max < this.value) {
+        // max < this.value
+        if (this.value > max) {
             if (left != null) {
-                return 1 + this.left.countMaximal(max);
+                return this.left.countMaximal(max);
+            } else {
+                return 0;
             }
-        } else if (max > this.value) {
+        // max > this.value
+        } else if (this.value < max) {
             if (right != null) {
                 return 1 + this.getLeftCount() + this.right.countMaximal(max);
             }
         }
 
-        return getLeftCount();
+        // kalo max = this.value/root.value, langsung ambil kirinya aja
+        return 1 + this.getLeftCount();
     }
 
     public int getTotalCount() {
