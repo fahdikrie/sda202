@@ -1,6 +1,12 @@
 import java.io.*;
 import java.util.*;
 
+/**
+ * Acknowledgements
+ *   1. Insertion mengambil referensi dari slide AVL dan BST SDA (Courtesy Pak Denny)
+ *   2. geeksforgeeks (avl insertion logic, inorder traversal method. level order traversal method)
+ */
+
 public class Lab3 {
 
     private static InputReader in = new InputReader(System.in);
@@ -42,40 +48,6 @@ public class Lab3 {
 
                 stockTree.insert(insertStore, insertStock);
                 distanceTree.insert(insertStore, insertDistance);
-
-                // stockTree.printInOrder(stockTree.root);
-                // stockTree.printLevelOrder();
-
-                // out.println(stockTree.getTree());
-
-                // out.print("[");
-                // for (Integer[] child : stockTree.getChildren()) {
-                //     out.print(Arrays.toString(child) + " ");
-                // }
-                // out.println("]");
-
-                // stockTree.emptyTree();
-                // stockTree.emptyChildren();
-
-                // out.println("");
-                // out.flush();
-
-                // distanceTree.printInOrder(distanceTree.root);
-                // distanceTree.printLevelOrder();
-
-                // out.println(distanceTree.getTree());
-
-                // out.print("[");
-                // for (Integer[] child : distanceTree.getChildren()) {
-                //     out.print(Arrays.toString(child) + " ");
-                // }
-                // out.println("]");
-
-                // distanceTree.emptyTree();
-                // distanceTree.emptyChildren();
-
-                // out.println("");
-
 
                 break;
 
@@ -145,7 +117,54 @@ public class Lab3 {
         public int nextInt() {
             return Integer.parseInt(next());
         }
+    }
 
+    static void stockTreeHelper() {
+        // pilih inorder/levelorder
+        // stockTree.printInOrder(stockTree.root);
+        stockTree.printLevelOrder();
+
+        // print main tree
+        out.println(stockTree.getTree());
+
+        // print children (l/r count) of each nodes
+        out.print("[");
+        for (Integer[] child : stockTree.getChildren()) {
+            out.print(Arrays.toString(child) + " ");
+        }
+        out.println("]");
+
+        // empty tree & children
+        stockTree.emptyTree();
+        stockTree.emptyChildren();
+
+        // newline & flush
+        out.println("");
+        out.flush();
+    }
+
+    static void distanceTreeHelper() {
+        // pilih inorder/levelorder
+        // distanceTree.printInOrder(distanceTree.root);
+        distanceTree.printLevelOrder();
+
+        // print main tree
+        out.println(distanceTree.getTree());
+
+        // print children (l/r count) of each nodes
+        out.print("[");
+        for (Integer[] child : distanceTree.getChildren()) {
+            out.print(Arrays.toString(child) + " ");
+        }
+        out.println("]");
+
+        // empty tree & children
+        distanceTree.emptyTree();
+        distanceTree.emptyChildren();
+
+        // newline & flush
+        out.println("");
+        out.flush();
     }
 }
 
@@ -217,7 +236,6 @@ class Tree {
                 ? subRight.getTotalCount()
                 : 0
         );
-
 
         sub.right = pivot;
         pivot.left = subRight;
