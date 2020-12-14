@@ -50,6 +50,8 @@ public class OdadingIzuri {
         for (int i = 0; i < firstRow[0]; i++) {
             stores.addVertex(in.next());
         }
+
+        // System.out.println(firstRow[0]);
     }
 
     static void handleStoreRoadInput() {
@@ -63,6 +65,7 @@ public class OdadingIzuri {
 
             stores.addEdge(vertex1, vertex2, tempuh, kupon, tutup);;
         }
+        // System.out.println(firstRow[1]);
 
         // firstRow[2] => E
         for (int i = 0; i < firstRow[2]; i++) {
@@ -73,9 +76,11 @@ public class OdadingIzuri {
 
             stores.addExclusiveEdge(vertex1, vertex2, kupon, tutup);
         }
+        // System.out.println(firstRow[2]);
     }
 
     static void handleQueryInput() {
+        // System.out.println(firstRow[3]);
         // firstRow[3] => Q
         for (int i = 0; i  < firstRow[3]; i++) {
             String query = in.next();
@@ -93,13 +98,21 @@ public class OdadingIzuri {
                 int X = in.nextInt();
 
                 sbOut.append(Integer.toString(stores.traverseGraphAtXTime(X)));
+                sbOut.append("\n");
 
                 break;
 
             case "TANYA_HUBUNG":
 
-                int S1 = in.nextInt();
-                int S2 = in.nextInt();
+                String S1 = in.next();
+                String S2 = in.next();
+
+                if (stores.traverseToSeeConnection(S2, S1)) {
+                    sbOut.append("YA");
+                } else {
+                    sbOut.append("TIDAK");
+                }
+                sbOut.append("\n");
 
                 break;
 
@@ -203,6 +216,10 @@ class Graph {
         return compute.traverseGraphAtXTime(time);
     }
 
+    public boolean traverseToSeeConnection(String source, String destination) {
+        return compute.traverseToSeeConnection(source, destination);
+    }
+
     class Compute {
 
         public int traverseGraphAtXTime(int time) {
@@ -217,13 +234,13 @@ class Graph {
             stack.push(source);
 
             while (!stack.isEmpty()) {
-                AdjacencyList adj = stack.peek();
-                stack.pop();
+                AdjacencyList adj = stack.pop();
+                adj.vertex.visited = true;
 
                 for (Edge edge : adj.adjacentEdges) {
                     if (edge.vertex1 == adj.vertex) {
                         if (time < edge.tutup) {
-                            System.out.println(edge.vertex1.name + " " + edge.vertex2.name);
+                            // System.out.println(edge.vertex1.name + " " + edge.vertex2.name);
                             traversables++;
                         }
                     }
@@ -239,7 +256,41 @@ class Graph {
             return traversables;
         }
 
-        // public void traverseToSeeConnection
+        public boolean traverseToSeeConnection(String source, String destination) {
+            for (AdjacencyList adj : vertices.values()) {
+                adj.vertex.visited = false;
+            }
+
+            Stack<AdjacencyList> stack = new Stack<>();
+            stack.push(vertices.get(source));
+
+            while (!stack.isEmpty()) {
+                AdjacencyList adj = stack.pop();
+                adj.vertex.visited = true;
+
+                // System.out.println(adj.vertex.name);
+                if (adj.vertex == vertices.get(destination).vertex) return true;
+
+                for (Edge edge : adj.adjacentEdges) {
+
+                    Vertex next = edge.vertex2;
+                    if (adj.vertex == edge.vertex2) {
+                        next = edge.vertex1;
+                    }
+
+                    if (!next.visited) {
+                        next.visited = true;
+                        stack.push(vertices.get(next.name));
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public int traverseToCountMinCoupun(String source, String destination) {
+            
+        }
 
         // source S2, destination S1
         // public void traverseToSeeConnection(Vertex source, Vertex destination) {
