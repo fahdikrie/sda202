@@ -1,6 +1,14 @@
 import java.io.*;
 import java.util.*;
 
+/**
+ * Acknowledgements
+ * 1. GFG dfs algo (https://www.geeksforgeeks.org/iterative-depth-first-traversal/)
+ *    ambil referensi traverse using dfs tanpa rekursi
+ * 2. Java2Blog dijkstra implementation (https://java2blog.com/dijkstra-java/)
+ *    ambil referensi dijkstra. link tau dari Althof dan Gita
+ */
+
 public class OdadingIzuri {
 
     private static InputReader in = new InputReader(System.in);
@@ -121,6 +129,8 @@ public class OdadingIzuri {
                 int KuponS1 = in.nextInt();
                 int KuponS2 = in.nextInt();
 
+                sbOut.append(stores.trave
+
                 break;
 
             case "TANYA_EX":
@@ -189,7 +199,7 @@ class Graph {
         Vertex vertex2 = vertices.get(v2).vertex;
 
         Edge edge1 = new Edge(vertex1, vertex2, tempuh, kupon, tutup);
-        Edge edge2 = new Edge(vertex2, vertex1, tempuh, kupon, tutup);
+        // Edge edge2 = new Edge(vertex2, vertex1, tempuh, kupon, tutup);
 
         vertices.get(v1).adjacentEdges.add(edge1);
         vertices.get(v2).adjacentEdges.add(edge1);
@@ -203,7 +213,7 @@ class Graph {
         Vertex vertex2 = vertices.get(v2).vertex;
 
         Edge edge1 = new ExclusiveEdge(vertex1, vertex2, kupon, tutup);
-        Edge edge2 = new ExclusiveEdge(vertex2, vertex1, kupon, tutup);
+        // Edge edge2 = new ExclusiveEdge(vertex2, vertex1, kupon, tutup);
 
         vertices.get(v1).adjacentEdges.add(edge1);
         vertices.get(v2).adjacentEdges.add(edge1);
@@ -218,6 +228,10 @@ class Graph {
 
     public boolean traverseToSeeConnection(String source, String destination) {
         return compute.traverseToSeeConnection(source, destination);
+    }
+
+    public int traverseToCountMinCoupun(String source, String destination) {
+        return.compute.traverseToCountMinCoupun(source, destination);
     }
 
     class Compute {
@@ -289,7 +303,50 @@ class Graph {
         }
 
         public int traverseToCountMinCoupun(String source, String destination) {
-            
+            for (AdjacencyList adj : vertices.values()) {
+                adj.vertex.visited = false;
+                adj.vertex.spKupon = Integer.MAX_VALUE;
+            }
+
+            int minCoupon = -1;
+
+            AdjacencyList src = vertices.get(source);
+            src.vertex.spKupon = 0;
+            src.vertex.visited = true;
+
+            PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new KuponComparator());
+            Set<AdjacencyList> green = new HashSet<>();
+            grey.add(src);
+
+            while (green.size() < vertices.size()) {
+                AdjacencyList adj = grey.poll();
+                green.add(adj);
+
+                if (adj.vertex == vertices.get(destination).vertex) return minCoupon;
+
+                for (Edge edge : adj.adjacentEdges) {
+
+                    Vertex next = edge.vertex2;
+                    if (adj.vertex == edge.vertex2) {
+                        next = edge.vertex1;
+                    }
+
+                    if (adj.vertex.spKupon == 0) {
+                        if (next.spKupon > (1 * edge.kupon)) {
+                            next.spKupon = 1 * edge.kupon;
+                        }
+                    } else {
+                        if (next.spKupon > (adj.vertex.spKupon * edge.kupon)) {
+                            next.spKupon = adj.vertex.spKupon * edge.kupon;
+                        }
+                    }
+
+                    grey.add(vertices.get(next.name));
+                }
+
+            }
+
+            return minCoupon;
         }
 
         // source S2, destination S1
@@ -366,13 +423,29 @@ class AdjacencyList {
     }
 }
 
+class KuponComparator implements Comparator<AdjacencyList> {
+    public int compare(AdjacencyList adj1, AdjacencyList adj2) {
+        if (adj1.vertex.spKupon < adj2.vertex.spKupon) {
+            return 1;
+        } else if (adj1.vertex.spKupon > adj2.vertex.spKupon) {
+            return -1;
+        }
+
+        return 0;
+    }
+}
+
 class Vertex {
     String name;
     boolean visited;
+    int spTempuh;
+    int spKupon;
 
     public Vertex(String name) {
         this.name = name;
         this.visited = false;
+        this.spTempuh = Integer.MAX_VALUE;
+        this.spKupon = Integer.MAX_VALUE;
     }
 }
 
