@@ -126,10 +126,10 @@ public class OdadingIzuri {
 
             case "TANYA_KUPON":
 
-                int KuponS1 = in.nextInt();
-                int KuponS2 = in.nextInt();
+                String KuponS1 = in.next();
+                String KuponS2 = in.next();
 
-                sbOut.append(stores.trave
+                sbOut.append(stores.traverseToCountMinCoupun(KuponS2, KuponS1));
 
                 break;
 
@@ -231,7 +231,7 @@ class Graph {
     }
 
     public int traverseToCountMinCoupun(String source, String destination) {
-        return.compute.traverseToCountMinCoupun(source, destination);
+        return compute.traverseToCountMinCoupun(source, destination);
     }
 
     class Compute {
@@ -304,7 +304,6 @@ class Graph {
 
         public int traverseToCountMinCoupun(String source, String destination) {
             for (AdjacencyList adj : vertices.values()) {
-                adj.vertex.visited = false;
                 adj.vertex.spKupon = Integer.MAX_VALUE;
             }
 
@@ -312,17 +311,19 @@ class Graph {
 
             AdjacencyList src = vertices.get(source);
             src.vertex.spKupon = 0;
-            src.vertex.visited = true;
 
             PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new KuponComparator());
             Set<AdjacencyList> green = new HashSet<>();
             grey.add(src);
 
-            while (green.size() < vertices.size()) {
+            while (grey.size() >= 1) {
                 AdjacencyList adj = grey.poll();
+                minCoupon = adj.vertex.spKupon;
                 green.add(adj);
 
-                if (adj.vertex == vertices.get(destination).vertex) return minCoupon;
+                System.out.println("VERTEX" + adj.vertex.name);
+
+                if (adj.vertex == vertices.get(destination).vertex) return minCoupon % 1000000007;
 
                 for (Edge edge : adj.adjacentEdges) {
 
@@ -331,83 +332,69 @@ class Graph {
                         next = edge.vertex1;
                     }
 
-                    if (adj.vertex.spKupon == 0) {
-                        if (next.spKupon > (1 * edge.kupon)) {
-                            next.spKupon = 1 * edge.kupon;
+                    if (!green.contains(vertices.get(next.name))) {
+                        next.visited = true;
+
+                        if (adj.vertex.spKupon == 0) {
+                            if (next.spKupon > (1 * edge.kupon)) {
+                                next.spKupon = 1 * edge.kupon;
+                            }
+                        } else {
+                            if (next.spKupon > (adj.vertex.spKupon * edge.kupon)) {
+                                next.spKupon = adj.vertex.spKupon * edge.kupon;
+                            }
                         }
-                    } else {
-                        if (next.spKupon > (adj.vertex.spKupon * edge.kupon)) {
-                            next.spKupon = adj.vertex.spKupon * edge.kupon;
+
+                        if (!grey.contains(vertices.get(next.name))) {
+                            grey.add(vertices.get(next.name));
                         }
                     }
-
-                    grey.add(vertices.get(next.name));
                 }
-
             }
 
-            return minCoupon;
+            return -1;
         }
 
-        // source S2, destination S1
-        // public void traverseToSeeConnection(Vertex source, Vertex destination) {
+        // public int traverseToSeeMinDepartureTimeEx(String source, String destination) {
         //     for (AdjacencyList adj : vertices.values()) {
         //         adj.vertex.visited = false;
+        //         adj.vertex.spTempuh = 0;
         //     }
 
-        //     AdjacencyList source = vertices.entrySet().iterator().next().getValue();
-        //     traversables = 0;
+        //     int minDepartureTimeEx = -1;
 
-        //     Stack<AdjacencyList> stack = new Stack<>();
-        //     stack.push(source)
+        //     AdjacencyList src = vertices.get(source);
+        //     src.vertex.spTempuh = 0;
+        //     src.vertex.visited = true;
 
-        //     while (!stack.isEmpty()) {
-        //         AdjacencyList adj = stack.peek();
-        //         stack.pop();
+        //     PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new KuponComparator());
+        //     Set<AdjacencyList> green = new HashSet<>();
+        //     grey.add(src);
+
+        //     while (grey.size() >= 1) {
+        //         AdjacencyList adj = grey.poll();
+        //         green.add(adj);
+
+        //         if (adj.vertex == vertices.get(destination).vertex) return minDepartureTimeEx;
 
         //         for (Edge edge : adj.adjacentEdges) {
-        //             if (edge.tutup < time) {
-        //                 traversables++;
+
+        //             if (edge.getClass() == ExclusiveEdge.class) {
+        //                 Vertex next = edge.vertex2;
+        //                 if (adj.vertex == edge.vertex2) {
+        //                     next = edge.vertex1;
+        //                 }
+
+        //                 if ((adj.vertex.spTempuh + 1) <= edge.tutup) {
+        //                     next.spTempuh = adj.vertex.spTempuh + 1;
+        //                 } else {
+        //                     return -1;
+        //                 }
         //             }
-
-        //             Vertex next = edge.vertex2;
-        //             if (!next.visited) {
-        //                 next.visited = true;
-        //                 stack.push(vertices.get(next));
-        //             }
-        //         }
-        //     }
-
-        //     return traversables;
-        // }
-
-        // public int traverseGraphAtXTime(int time) {
-        //     for (AdjacencyList adj : vertices.values()) {
-        //         adj.vertex.visited = false;
-        //     }
-
-        //     AdjacencyList source = vertices.entrySet().iterator().next().getValue();
-        //     traversables = 0;
-
-        //     traverseGraphAtXTimeRec(source, time);
-
-        //     return traversables;
-        // }
-
-        // public void traverseGraphAtXTimeRec(AdjacencyList adj, int time) {
-        //     for (Edge edge : adj.adjacentEdges) {
-        //         if (edge.tutup < time) {
-        //             traversables++;
         //         }
 
-        //         Vertex next = edge.vertex2;
-        //         if (!next.visited) {
-        //             next.visited = true;
-        //             traverseGraphAtXTimeRec(vertices.get(next), time);
-        //         }
         //     }
         // }
-
     }
 }
 
@@ -426,9 +413,9 @@ class AdjacencyList {
 class KuponComparator implements Comparator<AdjacencyList> {
     public int compare(AdjacencyList adj1, AdjacencyList adj2) {
         if (adj1.vertex.spKupon < adj2.vertex.spKupon) {
-            return 1;
-        } else if (adj1.vertex.spKupon > adj2.vertex.spKupon) {
             return -1;
+        } else if (adj1.vertex.spKupon > adj2.vertex.spKupon) {
+            return 1;
         }
 
         return 0;
@@ -452,7 +439,6 @@ class Vertex {
 class Edge {
     Vertex vertex1;
     Vertex vertex2;
-    boolean visited;
     int tempuh;
     int kupon;
     int tutup;
@@ -460,7 +446,6 @@ class Edge {
     public Edge(Vertex vertex1, Vertex vertex2, int tempuh, int kupon, int tutup) {
         this.vertex1 = vertex1;
         this.vertex2 = vertex2;
-        this.visited = false;
         this.tempuh = tempuh;
         this.kupon = kupon;
         this.tutup = tutup;
