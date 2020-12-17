@@ -7,6 +7,12 @@ import java.util.*;
  *    ambil referensi traverse using dfs tanpa rekursi
  * 2. Java2Blog dijkstra implementation (https://java2blog.com/dijkstra-java/)
  *    ambil referensi dijkstra. link tau dari Althof dan Gita
+ * 3. Bertanya ke Gita untuk memastikan pemilihan algoritma yang sesuai dan ideal
+ *    untuk masing-masing query (14/12)
+ * 4. Bertanya ke Althof mengenai query tanya_kupon: bagaimana implementasi modulu 10^9 + 7
+ *    dan implementasi a^b pada operasinya (15/12)
+ * 5. Dijelaskan kembali mengenai soal tanya_kupon sama Ahmad Harori, Irfan Junaidi,
+ *    dan Rheznandya untuk bagian (16/12)
  */
 
 public class OdadingIzuri {
@@ -135,15 +141,15 @@ public class OdadingIzuri {
 
             case "TANYA_EX":
 
-                int ExS1 = in.nextInt();
-                int ExS2 = in.nextInt();
+                String ExS1 = in.next();
+                String ExS2 = in.next();
 
                 break;
 
             case "TANYA_BIASA":
 
-                int BiasaS1 = in.nextInt();
-                int BiasaS2 = in.nextInt();
+                String BiasaS1 = in.next();
+                String BiasaS2 = in.next();
 
                 break;
 
@@ -283,6 +289,7 @@ class Graph {
                 adj.vertex.visited = true;
 
                 // System.out.println(adj.vertex.name);
+
                 if (adj.vertex == vertices.get(destination).vertex) return true;
 
                 for (Edge edge : adj.adjacentEdges) {
@@ -321,7 +328,7 @@ class Graph {
                 minCoupon = adj.vertex.spKupon;
                 green.add(adj);
 
-                System.out.println("VERTEX" + adj.vertex.name);
+                // System.out.println("VERTEX" + adj.vertex.name);
 
                 if (adj.vertex == vertices.get(destination).vertex) return minCoupon % 1000000007;
 
@@ -375,25 +382,80 @@ class Graph {
         //         AdjacencyList adj = grey.poll();
         //         green.add(adj);
 
+        //         // System.out.println("VERTEX" + adj.vertex.name);
+
         //         if (adj.vertex == vertices.get(destination).vertex) return minDepartureTimeEx;
 
         //         for (Edge edge : adj.adjacentEdges) {
 
-        //             if (edge.getClass() == ExclusiveEdge.class) {
-        //                 Vertex next = edge.vertex2;
-        //                 if (adj.vertex == edge.vertex2) {
-        //                     next = edge.vertex1;
-        //                 }
-
-        //                 if ((adj.vertex.spTempuh + 1) <= edge.tutup) {
-        //                     next.spTempuh = adj.vertex.spTempuh + 1;
-        //                 } else {
-        //                     return -1;
-        //                 }
+        //             Vertex next = edge.vertex2;
+        //             if (adj.vertex == edge.vertex2) {
+        //                 next = edge.vertex1;
         //             }
-        //         }
 
+        //             if (!green.contains(vertices.get(next.name))) {
+
+        //                 if (!grey.contains(vertices.get(next.name))) {
+        //                     grey.add(vertices.get(next.name));
+        //                 }
+
+                        
+        //             }
+
+        //         }
         //     }
+
+        //     return -1;
+        // }
+
+        // public int traverseToSeeMinDepartureTimeReg(String source, String destination) {
+        //     for (AdjacencyList adj : vertices.values()) {
+        //         adj.vertex.visited = false;
+        //         adj.vertex.spTempuh = 0;
+        //     }
+
+        //     int minDepartureTimeEx = -1;
+
+        //     AdjacencyList src = vertices.get(source);
+        //     src.vertex.spTempuh = 0;
+        //     src.vertex.visited = true;
+
+        //     PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new KuponComparator());
+        //     Set<AdjacencyList> green = new HashSet<>();
+        //     grey.add(src);
+
+        //     while (grey.size() >= 1) {
+        //         AdjacencyList adj = grey.poll();
+        //         green.add(adj);
+
+        //         // System.out.println("VERTEX" + adj.vertex.name);
+
+        //         if (adj.vertex == vertices.get(destination).vertex) return minDepartureTimeEx;
+
+        //         for (Edge edge : adj.adjacentEdges) {
+
+        //             Vertex next = edge.vertex2;
+        //             if (adj.vertex == edge.vertex2) {
+        //                 next = edge.vertex1;
+        //             }
+
+        //             if (!green.contains(vertices.get(next.name))) {
+
+        //                 if (!grey.contains(vertices.get(next.name))) {
+        //                     grey.add(vertices.get(next.name));
+        //                 }
+
+                        
+        //             }
+
+        //         }
+        //     }
+
+        //     return -1;
+        // }
+
+        // public int binarySearch() {
+
         // }
     }
 }
