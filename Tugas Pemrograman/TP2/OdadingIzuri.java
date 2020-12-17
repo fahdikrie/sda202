@@ -111,7 +111,7 @@ public class OdadingIzuri {
 
                 int X = in.nextInt();
 
-                sbOut.append(Integer.toString(stores.traverseGraphAtXTime(X)));
+                sbOut.append(Integer.toString(stores.traversableGraphAtXTime(X)));
                 sbOut.append("\n");
 
                 break;
@@ -136,20 +136,28 @@ public class OdadingIzuri {
                 String KuponS2 = in.next();
 
                 sbOut.append(stores.traverseToCountMinCoupun(KuponS2, KuponS1));
+                sbOut.append("\n");
 
                 break;
 
-            case "TANYA_EX":
+                case "TANYA_EX":
 
                 String ExS1 = in.next();
                 String ExS2 = in.next();
 
+                sbOut.append(Integer.toString(0));
+                sbOut.append("\n");
+
                 break;
 
-            case "TANYA_BIASA":
+                case "TANYA_BIASA":
 
                 String BiasaS1 = in.next();
                 String BiasaS2 = in.next();
+
+                // sbOut.append(Integer.toString(0));
+                sbOut.append(stores.traverseToSeeMaxDepartureTimeReg(BiasaS2, BiasaS1));
+                sbOut.append("\n");
 
                 break;
 
@@ -228,8 +236,8 @@ class Graph {
         vertices.get(v2).adjacentVertices.add(vertex1);
     }
 
-    public int traverseGraphAtXTime(int time) {
-        return compute.traverseGraphAtXTime(time);
+    public int traversableGraphAtXTime(int time) {
+        return compute.traversableGraphAtXTime(time);
     }
 
     public boolean traverseToSeeConnection(String source, String destination) {
@@ -240,9 +248,41 @@ class Graph {
         return compute.traverseToCountMinCoupun(source, destination);
     }
 
+    public int traverseToSeeMaxDepartureTimeReg(String source, String destination) {
+        return compute.traverseToSeeMaxDepartureTimeReg(source, destination);
+    }
+
     class Compute {
 
+        // O(NM + NM) => O(NM)
+        public int traversableGraphAtXTime(int time) {
+            int traversables = 0;
+
+            // O(NM)
+            for (AdjacencyList adj : vertices.values()) {
+                for (Edge edge : adj.adjacentEdges) {
+                    if (!edge.visited) {
+                        edge.visited = true;
+
+                        if (time < edge.tutup) traversables++;
+                    }
+                }
+            }
+
+            // O(NM)
+            for (AdjacencyList adj : vertices.values()) {
+                for (Edge edge : adj.adjacentEdges) {
+                    edge.visited = false;
+                }
+            }
+
+            return traversables;
+        }
+
+        // O(N + NM)
         public int traverseGraphAtXTime(int time) {
+
+            // O(N)
             for (AdjacencyList adj : vertices.values()) {
                 adj.vertex.visited = false;
             }
@@ -253,14 +293,18 @@ class Graph {
             Stack<AdjacencyList> stack = new Stack<>();
             stack.push(source);
 
+            // O(NM)
             while (!stack.isEmpty()) {
                 AdjacencyList adj = stack.pop();
                 adj.vertex.visited = true;
 
+                System.out.println("VERTEX " + adj.vertex.name);
+
                 for (Edge edge : adj.adjacentEdges) {
+
                     if (edge.vertex1 == adj.vertex) {
                         if (time < edge.tutup) {
-                            // System.out.println(edge.vertex1.name + " " + edge.vertex2.name);
+                            System.out.println(edge.vertex1.name + " " + edge.vertex2.name);
                             traversables++;
                         }
                     }
@@ -328,7 +372,7 @@ class Graph {
                 minCoupon = adj.vertex.spKupon;
                 green.add(adj);
 
-                // System.out.println("VERTEX" + adj.vertex.name);
+                // System.out.println("VERTEX " + adj.vertex.name);
 
                 if (adj.vertex == vertices.get(destination).vertex) return minCoupon % 1000000007;
 
@@ -361,6 +405,92 @@ class Graph {
 
             return -1;
         }
+
+        public int traverseToSeeMaxDepartureTimeReg(String source, String destination) {
+            // Menggunakan algo dijkstra tapi di reverse source dan destinationnya
+            // Attribution: Rheznandya dan Fairuza
+
+            // Semua vertex di-set jadi -1 karena ingin mencari waktu keberangkatan max
+            for (AdjacencyList adj : vertices.values()) {
+                adj.vertex.visited = false;
+                adj.vertex.spTempuh = -1;
+            }
+
+            int maxDepartureTimeReg = -1;
+
+            // Menggunakan vertex/toko destination sebagai start/source
+            AdjacencyList src = vertices.get(destination);
+            // Src di-set jadi infinity/max_value supaya bisa dicompare untuk cari waktu keberangkatan paling ngaret
+            src.vertex.spTempuh = Integer.MAX_VALUE;
+            // Sebenernya kayanya gaperlu tp well let's see
+            src.vertex.visited = true;
+
+            PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new TempuhComparator());
+            Set<AdjacencyList> green = new HashSet<>();
+            grey.add(src);
+
+            while (grey.size() >= 1) {
+                AdjacencyList adj = grey.poll();
+                maxDepartureTimeReg = adj.vertex.spTempuh;
+                green.add(adj);
+
+                // System.out.println("VERTEX" + adj.vertex.name);
+
+                if (adj.vertex == vertices.get(source).vertex) return maxDepartureTimeReg;
+
+                for (Edge edge : adj.adjacentEdges) {
+
+                    if (edge.getClass() == ExclusiveEdge.class) continue;
+
+                    Vertex next = edge.vertex2;
+                    if (adj.vertex == edge.vertex2) {
+                        next = edge.vertex1;
+                    }
+
+                    if (!green.contains(vertices.get(next.name))) {
+                        // Pakai cara yg diajarin fe
+                        next.spTempuh = Math.min(adj.vertex.spTempuh, edge.tutup) - edge.tempuh;
+                        if (next.spTempuh < 0) {
+                            next.spTempuh = 0;
+                        }
+
+                        // System.out.println(next.name + " " + next.spTempuh);
+
+                        if (!grey.contains(vertices.get(next.name))) {
+                            grey.add(vertices.get(next.name));
+                        }
+                    }
+                }
+            }
+
+            return -1;
+        }
+
+        class KuponComparator implements Comparator<AdjacencyList> {
+            public int compare(AdjacencyList adj1, AdjacencyList adj2) {
+                if (adj1.vertex.spKupon < adj2.vertex.spKupon) {
+                    return -1;
+                } else if (adj1.vertex.spKupon > adj2.vertex.spKupon) {
+                    return 1;
+                }
+
+                return 0;
+            }
+        }
+
+        class TempuhComparator implements Comparator<AdjacencyList> {
+            public int compare(AdjacencyList adj1, AdjacencyList adj2) {
+                if (adj1.vertex.spTempuh < adj2.vertex.spTempuh) {
+                    return 1;
+                } else if (adj1.vertex.spTempuh > adj2.vertex.spTempuh) {
+                    return -1;
+                }
+
+                return 0;
+            }
+        }
+    }
+
 
         // public int traverseToSeeMinDepartureTimeEx(String source, String destination) {
         //     for (AdjacencyList adj : vertices.values()) {
@@ -399,7 +529,7 @@ class Graph {
         //                     grey.add(vertices.get(next.name));
         //                 }
 
-                        
+
         //             }
 
         //         }
@@ -445,7 +575,7 @@ class Graph {
         //                     grey.add(vertices.get(next.name));
         //                 }
 
-                        
+
         //             }
 
         //         }
@@ -457,7 +587,6 @@ class Graph {
         // public int binarySearch() {
 
         // }
-    }
 }
 
 class AdjacencyList {
@@ -469,18 +598,6 @@ class AdjacencyList {
         this.vertex = vertex;
         this.adjacentEdges = new LinkedHashSet<>();
         this.adjacentVertices = new LinkedHashSet<>();
-    }
-}
-
-class KuponComparator implements Comparator<AdjacencyList> {
-    public int compare(AdjacencyList adj1, AdjacencyList adj2) {
-        if (adj1.vertex.spKupon < adj2.vertex.spKupon) {
-            return -1;
-        } else if (adj1.vertex.spKupon > adj2.vertex.spKupon) {
-            return 1;
-        }
-
-        return 0;
     }
 }
 
@@ -501,6 +618,7 @@ class Vertex {
 class Edge {
     Vertex vertex1;
     Vertex vertex2;
+    boolean visited;
     int tempuh;
     int kupon;
     int tutup;
@@ -519,267 +637,3 @@ class ExclusiveEdge extends Edge {
         super(vertex1, vertex2, 1, kupon, tutup);
     }
 }
-
-// class AdjacencyList {
-//     Vertex vertex;
-//     LinkedHashSet<Edge> adjacentEdges;
-//     LinkedHashSet<Vertex> adjacentVertices;
-
-//     public AdjacencyList(Vertex vertex) {
-//         this.vertex = vertex;
-//         this.adjacentEdges = new LinkedHashSet<>();
-//         this.adjacentVertices = new LinkedHashSet<>();
-//     }
-// }
-
-// class Vertex {
-//     String name;
-//     boolean visited;
-
-//     public Vertex(String name) {
-//         this.name = name;
-//         this.visited = false;
-//     }
-// }
-
-// class Edge {
-//     Vertex vertex1;
-//     Vertex vertex2;
-//     boolean visited;
-//     int tempuh;
-//     int kupon;
-//     int tutup;
-
-//     public Edge(Vertex vertex1, Vertex vertex2, int tempuh, int kupon, int tutup) {
-//         this.vertex1 = vertex1;
-//         this.vertex2 = vertex2;
-//         this.visited = false;
-//         this.tempuh = tempuh;
-//         this.kupon = kupon;
-//         this.tutup = tutup;
-//     }
-// }
-
-// class ExclusiveEdge extends Edge {
-//     public ExclusiveEdge(Vertex vertex1, Vertex vertex2, int kupon, int tutup) {
-//         super(vertex1, vertex2, 1, kupon, tutup);
-//     }
-// }
-
-// class Compute {
-
-// }
-
-// class bGraph {
-
-//     Map<String, AdjacencyList> adjacentVertices;
-//     Compute compute;
-
-//     public Graph() {
-//         this.adjacentVertices =  new LinkedHashMap<>();
-//         this.compute = new Compute();
-//     }
-
-//     public int traverseGraphAtXTime(int tempuh) {
-//         return compute.traverseGraphAtXTime(tempuh, adjacentVertices);
-//     }
-
-//     public void addVertex(String name) {
-//         this.getAdjacentVertices().add(new AdjacencyList(name));
-//     }
-
-//     public void addEdge(String vertex1, String vertex2, int tempuh, int kupon, int tutup) {
-//         Edge edge = new Edge(vertex1, vertex1, tempuh, kupon, tutup);
-
-//         this.getAdjacencyList(vertex1).addEdge(edge);
-//         this.getAdjacencyList(vertex2).addEdge(edge);
-//     }
-
-//     public void addExclusiveEdge(String vertex1, String vertex2, int kupon, int tutup) {
-//         ExclusiveEdge exclusiveEdge = new ExclusiveEdge(vertex1, vertex2, kupon, tutup);
-
-//         this.getAdjacencyList(vertex1).addEdge(exclusiveEdge);
-//         this.getAdjacencyList(vertex2).addEdge(exclusiveEdge);
-//     }
-
-//     public AdjacencyList getAdjacencyList(String vertex) {
-//         return this.adjacentVertices.get(vertex)
-//     }
-
-//     public Map<String, AdjacencyList> getAdjacentVertices() {
-//         return this.adjacentVertices;
-//     }
-
-//     class Compute {
-//         public int traverseGraphAtXTime(int tempuh, Map adjacentVertices) {
-//             // set all vertices isVisit to false
-//             for (AdjacencyList adjacencyList : getAdjacentVertices().values()) {
-//                 adjacencyList.getVertex().setIsVisited(false);
-//             }
-
-//             // get first element of adjacentVertices
-//             AdjacencyList firstElement = adjacentVertices.entrySet().iterator().next();
-
-//             // counter for roads that are open
-//             int openRoads = 0;
-
-//             // recursive call
-//             traverseGraphAtXTimeRec(firstElement.getVertex(), tempuh);
-//         }
-
-//         private void traverseGraphAtXTimeRec(Vertex vertex, int tempuh) {
-//             vertex.setIsVisited(true);
-
-//             for (Edge edge : getAdjacencyList(vertex.getVertex())) {
-
-//             }
-//         }
-//     }
-
-//     class AdjacencyList {
-//         Vertex vertex;
-//         List<Edge> adjacentEdges;
-
-//         public AdjacencyList(String name) {
-//             this.vertex = new Vertex(name);
-//             this.adjacentEdges = new ArrayList<>();
-//         }
-
-//         public void addEdge(Edge edge) {
-//             this.adjacentEdges.add(edge);
-//         }
-
-//         public Vertex getVertex() {
-//             return vertex;
-//         }
-
-//         public String getVertexName() {
-//             return vertex.name;
-//         }
-
-//         public List<Edge> getAdjacentEdges() {
-//             return adjacentEdges;
-//         }
-//     }
-
-//     class Vertex {
-//         String name;
-//         boolean isVisited;
-
-//         public Vertex(String name) {
-//             this.name = name;
-//         }
-
-//         public void setIsVisited(boolean flag) {
-//             this.isVisited = flag;
-//         }
-//     }
-
-//     class Edge {
-//         Vertex vertex1;
-//         Vertex vertex2;
-//         boolean isVisited;
-//         int tempuh;
-//         int kupon;
-//         int tutup;
-
-//         public Edge(Vertex vertex1, Vertex vertex2, int tempuh, int kupon, int tutup) {
-//             this.vertex1 = vertex1;
-//             this.vertex2 = vertex2;
-//             this.tempuh = tempuh;
-//             this.kupon = kupon;
-//             this.tutup = tutup;
-//         }
-
-//         public boolean getIsVisited() {
-//             return isVisited;
-//         }
-//     }
-
-//     class ExclusiveEdge extends Edge {
-//         public ExclusiveEdge(Vertex vertex1, Vertex vertex2, int kupon, int tutup) {
-//             super(vertex1, vertex2, 1, kupon, tutup);
-//         }
-//     }
-// }
-
-
-// class sGraph {
-//     Map<Vertex, List<Edge>> map;
-//     List<Vertex> vertices;
-//     Compute compute;
-
-//     public Graph() {
-//         this.map = new LinkedHashMap<>();
-//         this.vertices = new ArrayList<>();
-//         this.compute = new Compute();
-//     }
-
-//     public void addVertex(String name) {
-//         vertices.add(new Vertex(name));
-//     }
-
-//     public List<Vertex> getVertices() {
-//         return this.vertices;
-//     }
-
-//     class Compute {
-//         public void traverseGraphAtXTime(int time) {
-//             for (Vertex vertex : getVertices()) {
-//                 vertex.setIsVisited(false);
-//             }
-
-//             int edgesCount = 0;
-
-//             traverseGraphAtXTimeRec(getVertices().get(0), time);
-//         }
-
-//         public void traverseGraphAtXTimeRec(Vertex vertex, int time) {
-//             for (Edge edge : vertex.getAdjacentEdges()) {
-//                 if (time != edge.getTutup()) {
-//                     edgesCount++;
-//                 }
-//             }
-//         }
-//     }
-
-//     class Vertex {
-//         String name;
-//         List<Edge> adjacentEdges;
-//         boolean isVisited;
-
-//         public Vertex(String name) {
-//             this.name = name;
-//             adjacentEdges = new ArrayList<>();
-//         }
-
-//         public void addEdge(Edge edge) {
-//             this.adjacentEdges.add(edge);
-//         }
-
-//         public void setIsVisited(boolean flag) {
-//             this.isVisited = flag;
-//         }
-
-//         public List<Edge> getAdjacentEdges() {
-//             return adjacentEdges;
-//         }
-//     }
-
-//     class Edge {
-//         Vertex vertex1;
-//         Vertex vertex2;
-//         boolean isVisited;
-//         int tempuh;
-//         int kupon;
-//         int tutup;
-
-//         public Edge(Vertex vertex1, Vertex vertex2, int tempuh, int kupon, int tutup) {
-//             this.vertex1 = vertex1;
-//             this.vertex2 = vertex2;
-//             this.tempuh = tempuh;
-//             this.kupon = kupon;
-//             this.tutup = tutup;
-//         }
-//     }
-// }
