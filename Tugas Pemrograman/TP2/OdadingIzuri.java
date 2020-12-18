@@ -11,8 +11,9 @@ import java.util.*;
  *    untuk masing-masing query (14/12)
  * 4. Bertanya ke Althof mengenai query tanya_kupon: bagaimana implementasi modulu 10^9 + 7
  *    dan implementasi a^b pada operasinya (15/12)
- * 5. Dijelaskan kembali mengenai soal tanya_kupon sama Ahmad Harori, Irfan Junaidi,
+ * 5. Dijelaskan kembali mengenai query tanya_kupon, ex, dan biasa sama Ahmad Harori, Irfan Junaidi,
  *    dan Rheznandya untuk bagian (16/12)
+ * 6. Dijelaskan mengenai implementasi tanya_ex dan tanya_biasa oleh Fairuza (17/12)
  */
 
 public class OdadingIzuri {
@@ -42,10 +43,10 @@ public class OdadingIzuri {
         out.println(sbOut);
         out.close();
         sbOut.setLength(0);
-
     }
 
     static void handleFirstRowInput() {
+
         // Containing first row inputs {N, M, E, Q}
         firstRow = new int[4];
 
@@ -60,15 +61,18 @@ public class OdadingIzuri {
     }
 
     static void handleStoreNameInput() {
+
         // firstRow[0] => N
         for (int i = 0; i < firstRow[0]; i++) {
             stores.addVertex(in.next());
         }
-
-        // System.out.println(firstRow[0]);
     }
 
     static void handleStoreRoadInput() {
+
+        // Minimum kupon value
+        int minKupon = Integer.MAX_VALUE;
+
         // firstRow[1] => M
         for (int i = 0; i < firstRow[1]; i++) {
             String vertex1 = in.next();
@@ -77,9 +81,10 @@ public class OdadingIzuri {
             int kupon = in.nextInt();
             int tutup = in.nextInt();
 
-            stores.addEdge(vertex1, vertex2, tempuh, kupon, tutup);;
+            stores.addEdge(vertex1, vertex2, tempuh, kupon, tutup);
+
+            if (kupon < minKupon && kupon > 1) minKupon = kupon;
         }
-        // System.out.println(firstRow[1]);
 
         // firstRow[2] => E
         for (int i = 0; i < firstRow[2]; i++) {
@@ -89,12 +94,15 @@ public class OdadingIzuri {
             int tutup = in.nextInt();
 
             stores.addExclusiveEdge(vertex1, vertex2, kupon, tutup);
+
+            if (kupon < minKupon && kupon > 1) minKupon = kupon;
         }
-        // System.out.println(firstRow[2]);
+
+        stores.couponBase = calculateBase(minKupon);
     }
 
     static void handleQueryInput() {
-        // System.out.println(firstRow[3]);
+
         // firstRow[3] => Q
         for (int i = 0; i  < firstRow[3]; i++) {
             String query = in.next();
@@ -140,23 +148,21 @@ public class OdadingIzuri {
 
                 break;
 
-                case "TANYA_EX":
+            case "TANYA_EX":
 
                 String ExS1 = in.next();
                 String ExS2 = in.next();
 
-                // sbOut.append(Integer.toString(0));
                 sbOut.append(stores.traverseToSeeMaxDepartureTimeEx(ExS2, ExS1));
                 sbOut.append("\n");
 
                 break;
 
-                case "TANYA_BIASA":
+            case "TANYA_BIASA":
 
                 String BiasaS1 = in.next();
                 String BiasaS2 = in.next();
 
-                // sbOut.append(Integer.toString(0));
                 sbOut.append(stores.traverseToSeeMaxDepartureTimeReg(BiasaS2, BiasaS1));
                 sbOut.append("\n");
 
@@ -166,6 +172,26 @@ public class OdadingIzuri {
 
                 break;
         }
+    }
+
+    static int calculateBase(int minKupon) {
+
+        // Tercantum pada constraint soal bahwa kupon dapat dinyatakan dengan a^b
+        // Mencari nilai a sebagai basis seluruh nilai kupon pada setiap edge
+        // Attribution: Ahmad Harori
+
+        int base = minKupon;
+
+        for (int i = 2; i <= 316; i++) {
+            for (int j = 0; j <= 16; j++) {
+                if (Math.pow(i, j) == minKupon) {
+                    base = (int) Math.pow(i, j);
+                    return base;
+                }
+            }
+        }
+
+        return base;
     }
 
     static class InputReader {
@@ -197,6 +223,7 @@ public class OdadingIzuri {
 class Graph {
     Map<String, AdjacencyList> vertices;
     Compute compute;
+    int couponBase;
 
     public Graph() {
         this.vertices = new LinkedHashMap<>();
@@ -214,7 +241,6 @@ class Graph {
         Vertex vertex2 = vertices.get(v2).vertex;
 
         Edge edge1 = new Edge(vertex1, vertex2, tempuh, kupon, tutup);
-        // Edge edge2 = new Edge(vertex2, vertex1, tempuh, kupon, tutup);
 
         vertices.get(v1).adjacentEdges.add(edge1);
         vertices.get(v2).adjacentEdges.add(edge1);
@@ -228,7 +254,6 @@ class Graph {
         Vertex vertex2 = vertices.get(v2).vertex;
 
         Edge edge1 = new ExclusiveEdge(vertex1, vertex2, kupon, tutup);
-        // Edge edge2 = new ExclusiveEdge(vertex2, vertex1, kupon, tutup);
 
         vertices.get(v1).adjacentEdges.add(edge1);
         vertices.get(v2).adjacentEdges.add(edge1);
@@ -238,22 +263,32 @@ class Graph {
     }
 
     public int traversableGraphAtXTime(int time) {
+        // Pemanggilan method pada obj compute untuk query TANYA_JALAN
+
         return compute.traversableGraphAtXTime(time);
     }
 
     public boolean traverseToSeeConnection(String source, String destination) {
+        // Pemanggilan method pada obj compute untuk query TANYA_HUBUNG
+
         return compute.traverseToSeeConnection(source, destination);
     }
 
     public int traverseToCountMinCoupun(String source, String destination) {
-        return compute.traverseToCountMinCoupun(source, destination);
+        // Pemanggilan method pada obj compute untuk query TANYA_KUPON
+
+        return (int) compute.traverseToCountMinCoupun(source, destination);
     }
 
     public int traverseToSeeMaxDepartureTimeEx(String source, String destination) {
+        // Pemanggilan method pada obj compute untuk query TANYA_EX
+
         return compute.traverseToSeeMaxDepartureTimeEx(source, destination);
     }
 
     public int traverseToSeeMaxDepartureTimeReg(String source, String destination) {
+        // Pemanggilan method pada obj compute untuk query TANYA_BIASA
+
         return compute.traverseToSeeMaxDepartureTimeReg(source, destination);
     }
 
@@ -358,7 +393,7 @@ class Graph {
             return false;
         }
 
-        public int traverseToCountMinCoupun(String source, String destination) {
+        public double traverseToCountMinCoupun(String source, String destination) {
             for (AdjacencyList adj : vertices.values()) {
                 adj.vertex.spKupon = Integer.MAX_VALUE;
             }
@@ -379,7 +414,9 @@ class Graph {
 
                 // System.out.println("VERTEX " + adj.vertex.name);
 
-                if (adj.vertex == vertices.get(destination).vertex) return minCoupon % 1000000007;
+                if (adj.vertex == vertices.get(destination).vertex)
+                    return Math.pow(couponBase, minCoupon) % 1000000007;
+                    // return minCoupon;
 
                 for (Edge edge : adj.adjacentEdges) {
 
@@ -388,18 +425,18 @@ class Graph {
                         next = edge.vertex1;
                     }
 
-                    if (!green.contains(vertices.get(next.name))) {
-                        next.visited = true;
+                    // Mengubah bentuk kupon on edge to the form of (b) as in (a^b)
+                    int coupon = log(edge.kupon, couponBase);
+                    // System.out.println(edge.kupon + " - " + coupon);
 
-                        if (adj.vertex.spKupon == 0) {
-                            if (next.spKupon > (1 * edge.kupon)) {
-                                next.spKupon = 1 * edge.kupon;
-                            }
-                        } else {
-                            if (next.spKupon > (adj.vertex.spKupon * edge.kupon)) {
-                                next.spKupon = adj.vertex.spKupon * edge.kupon;
-                            }
+                    if (!green.contains(vertices.get(next.name))) {
+
+                        int sp = adj.vertex.spKupon + coupon;
+                        if (sp < next.spKupon) {
+                            next.spKupon = sp;
                         }
+
+                        // System.out.println(next.name + " " + next.spKupon);
 
                         if (!grey.contains(vertices.get(next.name))) {
                             grey.add(vertices.get(next.name));
@@ -529,6 +566,10 @@ class Graph {
             return -1;
         }
 
+        public int log(int value, int base) {
+            return (int) (Math.log(value) / Math.log(base));
+        }
+
         class KuponComparator implements Comparator<AdjacencyList> {
             public int compare(AdjacencyList adj1, AdjacencyList adj2) {
                 if (adj1.vertex.spKupon < adj2.vertex.spKupon) {
@@ -553,103 +594,6 @@ class Graph {
             }
         }
     }
-
-
-        // public int traverseToSeeMinDepartureTimeEx(String source, String destination) {
-        //     for (AdjacencyList adj : vertices.values()) {
-        //         adj.vertex.visited = false;
-        //         adj.vertex.spTempuh = 0;
-        //     }
-
-        //     int minDepartureTimeEx = -1;
-
-        //     AdjacencyList src = vertices.get(source);
-        //     src.vertex.spTempuh = 0;
-        //     src.vertex.visited = true;
-
-        //     PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new KuponComparator());
-        //     Set<AdjacencyList> green = new HashSet<>();
-        //     grey.add(src);
-
-        //     while (grey.size() >= 1) {
-        //         AdjacencyList adj = grey.poll();
-        //         green.add(adj);
-
-        //         // System.out.println("VERTEX" + adj.vertex.name);
-
-        //         if (adj.vertex == vertices.get(destination).vertex) return minDepartureTimeEx;
-
-        //         for (Edge edge : adj.adjacentEdges) {
-
-        //             Vertex next = edge.vertex2;
-        //             if (adj.vertex == edge.vertex2) {
-        //                 next = edge.vertex1;
-        //             }
-
-        //             if (!green.contains(vertices.get(next.name))) {
-
-        //                 if (!grey.contains(vertices.get(next.name))) {
-        //                     grey.add(vertices.get(next.name));
-        //                 }
-
-
-        //             }
-
-        //         }
-        //     }
-
-        //     return -1;
-        // }
-
-        // public int traverseToSeeMinDepartureTimeReg(String source, String destination) {
-        //     for (AdjacencyList adj : vertices.values()) {
-        //         adj.vertex.visited = false;
-        //         adj.vertex.spTempuh = 0;
-        //     }
-
-        //     int minDepartureTimeEx = -1;
-
-        //     AdjacencyList src = vertices.get(source);
-        //     src.vertex.spTempuh = 0;
-        //     src.vertex.visited = true;
-
-        //     PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new KuponComparator());
-        //     Set<AdjacencyList> green = new HashSet<>();
-        //     grey.add(src);
-
-        //     while (grey.size() >= 1) {
-        //         AdjacencyList adj = grey.poll();
-        //         green.add(adj);
-
-        //         // System.out.println("VERTEX" + adj.vertex.name);
-
-        //         if (adj.vertex == vertices.get(destination).vertex) return minDepartureTimeEx;
-
-        //         for (Edge edge : adj.adjacentEdges) {
-
-        //             Vertex next = edge.vertex2;
-        //             if (adj.vertex == edge.vertex2) {
-        //                 next = edge.vertex1;
-        //             }
-
-        //             if (!green.contains(vertices.get(next.name))) {
-
-        //                 if (!grey.contains(vertices.get(next.name))) {
-        //                     grey.add(vertices.get(next.name));
-        //                 }
-
-
-        //             }
-
-        //         }
-        //     }
-
-        //     return -1;
-        // }
-
-        // public int binarySearch() {
-
-        // }
 }
 
 class AdjacencyList {
