@@ -412,7 +412,6 @@ class Graph {
 
             // Semua vertex di-set jadi -1 karena ingin mencari waktu keberangkatan max
             for (AdjacencyList adj : vertices.values()) {
-                adj.vertex.visited = false;
                 adj.vertex.spTempuh = -1;
             }
 
@@ -422,8 +421,6 @@ class Graph {
             AdjacencyList src = vertices.get(destination);
             // Src di-set jadi infinity/max_value supaya bisa dicompare untuk cari waktu keberangkatan paling ngaret
             src.vertex.spTempuh = Integer.MAX_VALUE;
-            // Sebenernya kayanya gaperlu tp well let's see
-            src.vertex.visited = true;
 
             PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new TempuhComparator());
             Set<AdjacencyList> green = new HashSet<>();
@@ -448,11 +445,16 @@ class Graph {
                     }
 
                     if (!green.contains(vertices.get(next.name))) {
+
                         // Pakai cara yg diajarin fe
-                        next.spTempuh = Math.min(adj.vertex.spTempuh, edge.tutup) - edge.tempuh;
-                        if (next.spTempuh < 0) {
-                            next.spTempuh = 0;
+                        int sp = Math.min(adj.vertex.spTempuh, edge.tutup) - edge.tempuh;
+                        if (next.spTempuh < sp) {
+                            next.spTempuh = sp;
                         }
+                        // next.spTempuh = Math.min(adj.vertex.spTempuh, edge.tutup) - edge.tempuh;
+                        // if (next.spTempuh < 0) {
+                        //     next.spTempuh = 0;
+                        // }
 
                         // System.out.println(next.name + " " + next.spTempuh);
 
