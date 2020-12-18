@@ -4,6 +4,13 @@ import java.util.*;
 // https://codereview.stackexchange.com/questions/186063/hash-table-implementation-using-java
 // https://github.com/sideffectjava/Hashtable-DS/blob/master/hashing/HashChaining.java
 
+/**
+ * Acknowledgements
+ * 1. Nanya ke Althof data structure yg ga dibatasin size untuk nyimpen hashnode
+ * 2. Nanya ke Fairuza soal biar ga overflow
+ * 3. Nanya ke Hugo soal biar ga overflow
+ */
+
 public class Lab4 {
 
     private static InputReader in = new InputReader(System.in);
@@ -108,24 +115,22 @@ class HashTable {
         } else {
             table.put(index, new HashNode(substring));
         }
-
-        // System.out.println(index + " " + substring);
     }
 
     public int hash(String substring) {
         // UTF-16 'a' => 97
 
         int index = 0;
-        int calcX = X;
+        int calcX = 1;
 
         for (int i = 0; i < substring.length(); i++) {
 
             int val = ((int) substring.charAt(i)) - 96;
 
             if (i == 0) {
-                index += (val * 1) % Y;
+                index += (val % Y * 1 % Y) % Y;
             } else {
-                index += (val * calcX) % Y;
+                index += (val % Y * calcX % Y) % Y;
             }
 
             calcX *= X;
@@ -138,32 +143,26 @@ class HashTable {
         int score = 0;
 
         for (Map.Entry<Integer, HashNode> map : table.entrySet()) {
-            // System.out.println(map.getKey() + " " + map.getValue().substring);
-            // System.out.println(map.getKey() + " " + map.getValue().length);
+            System.out.println(map.getKey() + " " + map.getValue().length);
 
             HashNode node = map.getValue();
 
             if (node.length > 1) {
-                score += combination(node.length, 2);
+                score += summation(node.length - 1);
             }
         }
 
         return score;
     }
 
-    public int combination(int n, int r) {
-        // nCr
+    public int summation(int length) {
 
-        return factorial(n) / 2;
-    }
+        // sigma length
 
-    public int factorial(int n) {
-        // n!
+        int result = 0;
 
-        int result = 1;
-
-        for (int i = 2; i <= n; i++) {
-            result *= i;
+        for (int i = length; i >= 1; i--) {
+            result += i;
         }
 
         return result;
