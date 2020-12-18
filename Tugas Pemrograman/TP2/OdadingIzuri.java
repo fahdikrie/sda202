@@ -145,7 +145,8 @@ public class OdadingIzuri {
                 String ExS1 = in.next();
                 String ExS2 = in.next();
 
-                sbOut.append(Integer.toString(0));
+                // sbOut.append(Integer.toString(0));
+                sbOut.append(stores.traverseToSeeMaxDepartureTimeEx(ExS2, ExS1));
                 sbOut.append("\n");
 
                 break;
@@ -246,6 +247,10 @@ class Graph {
 
     public int traverseToCountMinCoupun(String source, String destination) {
         return compute.traverseToCountMinCoupun(source, destination);
+    }
+
+    public int traverseToSeeMaxDepartureTimeEx(String source, String destination) {
+        return compute.traverseToSeeMaxDepartureTimeEx(source, destination);
     }
 
     public int traverseToSeeMaxDepartureTimeReg(String source, String destination) {
@@ -406,6 +411,65 @@ class Graph {
             return -1;
         }
 
+        public int traverseToSeeMaxDepartureTimeEx(String source, String destination) {
+            // Menggunakan algo dijkstra tapi di reverse source dan destinationnya
+            // Attribution: Rheznandya dan Fairuza
+
+            // Semua vertex di-set jadi -1 karena ingin mencari waktu keberangkatan max
+            for (AdjacencyList adj : vertices.values()) {
+                adj.vertex.spTempuh = -1;
+            }
+
+            int maxDepartureTimeEx = -1;
+
+            // Menggunakan vertex/toko destination sebagai start/source
+            AdjacencyList src = vertices.get(destination);
+            // Src di-set jadi infinity/max_value supaya bisa dicompare untuk cari waktu keberangkatan paling ngaret
+            src.vertex.spTempuh = Integer.MAX_VALUE;
+
+            PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new TempuhComparator());
+            Set<AdjacencyList> green = new HashSet<>();
+            grey.add(src);
+
+            while (grey.size() >= 1) {
+                AdjacencyList adj = grey.poll();
+                maxDepartureTimeEx = adj.vertex.spTempuh;
+                green.add(adj);
+
+                // System.out.println("VERTEX" + adj.vertex.name);
+
+                if (adj.vertex == vertices.get(source).vertex) return maxDepartureTimeEx;
+
+                for (Edge edge : adj.adjacentEdges) {
+
+                    // Skip iterasi kalau edge bukan exclusive edge
+                    if (edge.getClass() != ExclusiveEdge.class) continue;
+
+                    Vertex next = edge.vertex2;
+                    if (adj.vertex == edge.vertex2) {
+                        next = edge.vertex1;
+                    }
+
+                    if (!green.contains(vertices.get(next.name))) {
+
+                        // Pakai cara yg diajarin fe
+                        int sp = Math.min(adj.vertex.spTempuh, edge.tutup) - 1;
+                        if (next.spTempuh < sp) {
+                            next.spTempuh = sp;
+                        }
+
+                        // System.out.println(next.name + " " + next.spTempuh);
+
+                        if (!grey.contains(vertices.get(next.name))) {
+                            grey.add(vertices.get(next.name));
+                        }
+                    }
+                }
+            }
+
+            return -1;
+        }
+
         public int traverseToSeeMaxDepartureTimeReg(String source, String destination) {
             // Menggunakan algo dijkstra tapi di reverse source dan destinationnya
             // Attribution: Rheznandya dan Fairuza
@@ -437,6 +501,7 @@ class Graph {
 
                 for (Edge edge : adj.adjacentEdges) {
 
+                    // Skip iterasi kalau edge adalah exclusive edge
                     if (edge.getClass() == ExclusiveEdge.class) continue;
 
                     Vertex next = edge.vertex2;
@@ -451,10 +516,6 @@ class Graph {
                         if (next.spTempuh < sp) {
                             next.spTempuh = sp;
                         }
-                        // next.spTempuh = Math.min(adj.vertex.spTempuh, edge.tutup) - edge.tempuh;
-                        // if (next.spTempuh < 0) {
-                        //     next.spTempuh = 0;
-                        // }
 
                         // System.out.println(next.name + " " + next.spTempuh);
 
