@@ -274,10 +274,10 @@ class Graph {
         return compute.traverseToSeeConnection(source, destination);
     }
 
-    public int traverseToCountMinCoupun(String source, String destination) {
+    public long traverseToCountMinCoupun(String source, String destination) {
         // Pemanggilan method pada obj compute untuk query TANYA_KUPON
 
-        return (int) compute.traverseToCountMinCoupun(source, destination);
+        return (long) compute.traverseToCountMinCoupun(source, destination);
     }
 
     public int traverseToSeeMaxDepartureTimeEx(String source, String destination) {
@@ -415,8 +415,8 @@ class Graph {
                 // System.out.println("VERTEX " + adj.vertex.name);
 
                 if (adj.vertex == vertices.get(destination).vertex)
-                    return Math.pow(couponBase, minCoupon) % 1000000007;
-                    // return minCoupon;
+                    // return Math.pow(couponBase, minCoupon) % 1000000007;
+                    return pow(couponBase, minCoupon) % 1000000007;
 
                 for (Edge edge : adj.adjacentEdges) {
 
@@ -449,63 +449,88 @@ class Graph {
         }
 
         public int traverseToSeeMaxDepartureTimeEx(String source, String destination) {
-            // Menggunakan algo dijkstra tapi di reverse source dan destinationnya
-            // Attribution: Rheznandya dan Fairuza
-
-            // Semua vertex di-set jadi -1 karena ingin mencari waktu keberangkatan max
             for (AdjacencyList adj : vertices.values()) {
+                adj.vertex.visited = false;
                 adj.vertex.spTempuh = -1;
             }
 
-            int maxDepartureTimeEx = -1;
-
-            // Menggunakan vertex/toko destination sebagai start/source
             AdjacencyList src = vertices.get(destination);
-            // Src di-set jadi infinity/max_value supaya bisa dicompare untuk cari waktu keberangkatan paling ngaret
             src.vertex.spTempuh = Integer.MAX_VALUE;
 
             PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new TempuhComparator());
-            Set<AdjacencyList> green = new HashSet<>();
             grey.add(src);
 
-            while (grey.size() >= 1) {
+            // int maxDepartureTimeEx = -1;
+            int verticesSeen = 0;
+
+            while (!grey.isEmpty() && verticesSeen < vertices.size()) {
                 AdjacencyList adj = grey.poll();
-                maxDepartureTimeEx = adj.vertex.spTempuh;
-                green.add(adj);
 
-                // System.out.println("VERTEX" + adj.vertex.name);
+                if (adj.vertex.visited) continue;
+                adj.vertex.visited = true;
 
-                if (adj.vertex == vertices.get(source).vertex) return maxDepartureTimeEx;
 
-                for (Edge edge : adj.adjacentEdges) {
-
-                    // Skip iterasi kalau edge bukan exclusive edge
-                    if (edge.getClass() != ExclusiveEdge.class) continue;
-
-                    Vertex next = edge.vertex2;
-                    if (adj.vertex == edge.vertex2) {
-                        next = edge.vertex1;
-                    }
-
-                    if (!green.contains(vertices.get(next.name))) {
-
-                        // Pakai cara yg diajarin fe
-                        int sp = Math.min(adj.vertex.spTempuh, edge.tutup) - 1;
-                        if (next.spTempuh < sp) {
-                            next.spTempuh = sp;
-                        }
-
-                        // System.out.println(next.name + " " + next.spTempuh);
-
-                        if (!grey.contains(vertices.get(next.name))) {
-                            grey.add(vertices.get(next.name));
-                        }
-                    }
-                }
             }
-
-            return -1;
         }
+
+        // public int traverseToSeeMaxDepartureTimeEx(String source, String destination) {
+        //     // Menggunakan algo dijkstra tapi di reverse source dan destinationnya
+        //     // Attribution: Rheznandya dan Fairuza
+
+        //     // Semua vertex di-set jadi -1 karena ingin mencari waktu keberangkatan max
+        //     for (AdjacencyList adj : vertices.values()) {
+        //         adj.vertex.spTempuh = -1;
+        //     }
+
+        //     int maxDepartureTimeEx = -1;
+
+        //     // Menggunakan vertex/toko destination sebagai start/source
+        //     AdjacencyList src = vertices.get(destination);
+        //     // Src di-set jadi infinity/max_value supaya bisa dicompare untuk cari waktu keberangkatan paling ngaret
+        //     src.vertex.spTempuh = Integer.MAX_VALUE;
+
+        //     PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new TempuhComparator());
+        //     Set<AdjacencyList> green = new HashSet<>();
+        //     grey.add(src);
+
+        //     while (grey.size() >= 1) {
+        //         AdjacencyList adj = grey.poll();
+        //         maxDepartureTimeEx = adj.vertex.spTempuh;
+        //         green.add(adj);
+
+        //         // System.out.println("VERTEX" + adj.vertex.name);
+
+        //         if (adj.vertex == vertices.get(source).vertex) return maxDepartureTimeEx;
+
+        //         for (Edge edge : adj.adjacentEdges) {
+
+        //             // Skip iterasi kalau edge bukan exclusive edge
+        //             if (edge.getClass() != ExclusiveEdge.class) continue;
+
+        //             Vertex next = edge.vertex2;
+        //             if (adj.vertex == edge.vertex2) {
+        //                 next = edge.vertex1;
+        //             }
+
+        //             if (!green.contains(vertices.get(next.name))) {
+
+        //                 // Pakai cara yg diajarin fe
+        //                 int sp = Math.min(adj.vertex.spTempuh, edge.tutup) - 1;
+        //                 if (next.spTempuh < sp) {
+        //                     next.spTempuh = sp;
+        //                 }
+
+        //                 // System.out.println(next.name + " " + next.spTempuh);
+
+        //                 if (!grey.contains(vertices.get(next.name))) {
+        //                     grey.add(vertices.get(next.name));
+        //                 }
+        //             }
+        //         }
+        //     }
+
+        //     return -1;
+        // }
 
         public int traverseToSeeMaxDepartureTimeReg(String source, String destination) {
             // Menggunakan algo dijkstra tapi di reverse source dan destinationnya
@@ -568,6 +593,17 @@ class Graph {
 
         public int log(int value, int base) {
             return (int) (Math.log(value) / Math.log(base));
+        }
+
+        public int pow(int base, int exp) {
+
+            long result = 1;
+
+            for (int i = 0; i < exp; i++) {
+                result = (result * base) % 1000000007;
+            }
+
+            return (int) result;
         }
 
         class KuponComparator implements Comparator<AdjacencyList> {
