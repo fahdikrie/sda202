@@ -464,12 +464,81 @@ class Graph {
             int verticesSeen = 0;
 
             while (!grey.isEmpty() && verticesSeen < vertices.size()) {
+
                 AdjacencyList adj = grey.poll();
 
                 if (adj.vertex.visited) continue;
                 adj.vertex.visited = true;
+                verticesSeen++;
 
+                for (Edge edge : adj.adjacentEdges) {
 
+                    if (edge.getClass() != ExclusiveEdge.class) continue;
+
+                    Vertex next = edge.vertex2;
+                    if (adj.vertex == edge.vertex2) {
+                        next = edge.vertex1;
+                    }
+
+                    int sp = Math.min(adj.vertex.spTempuh, edge.tutup) - 1;
+                    if (next.spTempuh < sp) {
+                        next.spTempuh = sp;
+                        grey.add(vertices.get(next.name));
+                    }
+                }
+            }
+
+            if (vertices.get(source).vertex.visited) {
+                return vertices.get(source).vertex.spTempuh;
+            } else {
+                return -1;
+            }
+        }
+
+        public int traverseToSeeMaxDepartureTimeReg(String source, String destination) {
+            for (AdjacencyList adj : vertices.values()) {
+                adj.vertex.visited = false;
+                adj.vertex.spTempuh = -1;
+            }
+
+            AdjacencyList src = vertices.get(destination);
+            src.vertex.spTempuh = Integer.MAX_VALUE;
+
+            PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new TempuhComparator());
+            grey.add(src);
+
+            // int maxDepartureTimeEx = -1;
+            int verticesSeen = 0;
+
+            while (!grey.isEmpty() && verticesSeen < vertices.size()) {
+
+                AdjacencyList adj = grey.poll();
+
+                if (adj.vertex.visited) continue;
+                adj.vertex.visited = true;
+                verticesSeen++;
+
+                for (Edge edge : adj.adjacentEdges) {
+
+                    if (edge.getClass() == ExclusiveEdge.class) continue;
+
+                    Vertex next = edge.vertex2;
+                    if (adj.vertex == edge.vertex2) {
+                        next = edge.vertex1;
+                    }
+
+                    int sp = Math.min(adj.vertex.spTempuh, edge.tutup) - edge.tempuh;
+                    if (next.spTempuh < sp) {
+                        next.spTempuh = sp;
+                        grey.add(vertices.get(next.name));
+                    }
+                }
+            }
+
+            if (vertices.get(source).vertex.visited) {
+                return vertices.get(source).vertex.spTempuh;
+            } else {
+                return -1;
             }
         }
 
@@ -532,64 +601,64 @@ class Graph {
         //     return -1;
         // }
 
-        public int traverseToSeeMaxDepartureTimeReg(String source, String destination) {
-            // Menggunakan algo dijkstra tapi di reverse source dan destinationnya
-            // Attribution: Rheznandya dan Fairuza
+        // public int traverseToSeeMaxDepartureTimeReg(String source, String destination) {
+        //     // Menggunakan algo dijkstra tapi di reverse source dan destinationnya
+        //     // Attribution: Rheznandya dan Fairuza
 
-            // Semua vertex di-set jadi -1 karena ingin mencari waktu keberangkatan max
-            for (AdjacencyList adj : vertices.values()) {
-                adj.vertex.spTempuh = -1;
-            }
+        //     // Semua vertex di-set jadi -1 karena ingin mencari waktu keberangkatan max
+        //     for (AdjacencyList adj : vertices.values()) {
+        //         adj.vertex.spTempuh = -1;
+        //     }
 
-            int maxDepartureTimeReg = -1;
+        //     int maxDepartureTimeReg = -1;
 
-            // Menggunakan vertex/toko destination sebagai start/source
-            AdjacencyList src = vertices.get(destination);
-            // Src di-set jadi infinity/max_value supaya bisa dicompare untuk cari waktu keberangkatan paling ngaret
-            src.vertex.spTempuh = Integer.MAX_VALUE;
+        //     // Menggunakan vertex/toko destination sebagai start/source
+        //     AdjacencyList src = vertices.get(destination);
+        //     // Src di-set jadi infinity/max_value supaya bisa dicompare untuk cari waktu keberangkatan paling ngaret
+        //     src.vertex.spTempuh = Integer.MAX_VALUE;
 
-            PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new TempuhComparator());
-            Set<AdjacencyList> green = new HashSet<>();
-            grey.add(src);
+        //     PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new TempuhComparator());
+        //     Set<AdjacencyList> green = new HashSet<>();
+        //     grey.add(src);
 
-            while (grey.size() >= 1) {
-                AdjacencyList adj = grey.poll();
-                maxDepartureTimeReg = adj.vertex.spTempuh;
-                green.add(adj);
+        //     while (grey.size() >= 1) {
+        //         AdjacencyList adj = grey.poll();
+        //         maxDepartureTimeReg = adj.vertex.spTempuh;
+        //         green.add(adj);
 
-                // System.out.println("VERTEX" + adj.vertex.name);
+        //         // System.out.println("VERTEX" + adj.vertex.name);
 
-                if (adj.vertex == vertices.get(source).vertex) return maxDepartureTimeReg;
+        //         if (adj.vertex == vertices.get(source).vertex) return maxDepartureTimeReg;
 
-                for (Edge edge : adj.adjacentEdges) {
+        //         for (Edge edge : adj.adjacentEdges) {
 
-                    // Skip iterasi kalau edge adalah exclusive edge
-                    if (edge.getClass() == ExclusiveEdge.class) continue;
+        //             // Skip iterasi kalau edge adalah exclusive edge
+        //             if (edge.getClass() == ExclusiveEdge.class) continue;
 
-                    Vertex next = edge.vertex2;
-                    if (adj.vertex == edge.vertex2) {
-                        next = edge.vertex1;
-                    }
+        //             Vertex next = edge.vertex2;
+        //             if (adj.vertex == edge.vertex2) {
+        //                 next = edge.vertex1;
+        //             }
 
-                    if (!green.contains(vertices.get(next.name))) {
+        //             if (!green.contains(vertices.get(next.name))) {
 
-                        // Pakai cara yg diajarin fe
-                        int sp = Math.min(adj.vertex.spTempuh, edge.tutup) - edge.tempuh;
-                        if (next.spTempuh < sp) {
-                            next.spTempuh = sp;
-                        }
+        //                 // Pakai cara yg diajarin fe
+        //                 int sp = Math.min(adj.vertex.spTempuh, edge.tutup) - edge.tempuh;
+        //                 if (next.spTempuh < sp) {
+        //                     next.spTempuh = sp;
+        //                 }
 
-                        // System.out.println(next.name + " " + next.spTempuh);
+        //                 // System.out.println(next.name + " " + next.spTempuh);
 
-                        if (!grey.contains(vertices.get(next.name))) {
-                            grey.add(vertices.get(next.name));
-                        }
-                    }
-                }
-            }
+        //                 if (!grey.contains(vertices.get(next.name))) {
+        //                     grey.add(vertices.get(next.name));
+        //                 }
+        //             }
+        //         }
+        //     }
 
-            return -1;
-        }
+        //     return -1;
+        // }
 
         public int log(int value, int base) {
             return (int) (Math.log(value) / Math.log(base));
