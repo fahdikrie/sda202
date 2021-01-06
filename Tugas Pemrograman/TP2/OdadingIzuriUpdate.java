@@ -28,15 +28,24 @@ public class OdadingIzuri {
 
         // Instantiate stringbuilder to store outputs
         sbOut = new StringBuilder();
+
         // Get user input for N, M, E, Q
+        // O(1)
         handleFirstRowInput();
+
         // Instantiate store graph object
         stores = new Graph();
+
         // Get user input for store name
+        // O(N)
         handleStoreNameInput();
+
         // Get user input for store roads
+        // O(M + E)
         handleStoreRoadInput();
+
         // Get user input for queries
+        // O(Q * Query)
         handleQueryInput();
 
         // Print all outputs
@@ -298,7 +307,7 @@ class Graph {
         public int traversableGraphAtXTime(int time) {
             int traversables = 0;
 
-            // O(N + (M + E))
+            // O(NM)
             for (AdjacencyList adj : vertices.values()) {
                 for (Edge edge : adj.adjacentEdges) {
                     if (!edge.visited) {
@@ -319,47 +328,50 @@ class Graph {
             return traversables;
         }
 
-        // // O(N + NM)
-        // public int traverseGraphAtXTime(int time) {
+        2
 
-        //     // O(N)
-        //     for (AdjacencyList adj : vertices.values()) {
-        //         adj.vertex.visited = false;
-        //     }
+        // O(N + N + M + E) => (N + M + E)
+        public int traverseGraphAtXTime(int time) {
 
-        //     AdjacencyList source = vertices.entrySet().iterator().next().getValue();
-        //     int traversables = 0;
+            // O(N)
+            for (AdjacencyList adj : vertices.values()) {
+                adj.vertex.visited = false;
+            }
 
-        //     Stack<AdjacencyList> stack = new Stack<>();
-        //     stack.push(source);
+            AdjacencyList source = vertices.entrySet().iterator().next().getValue();
+            int traversables = 0;
 
-        //     // O(NM)
-        //     while (!stack.isEmpty()) {
-        //         AdjacencyList adj = stack.pop();
-        //         adj.vertex.visited = true;
+            Stack<AdjacencyList> stack = new Stack<>();
+            stack.push(source);
 
-        //         System.out.println("VERTEX " + adj.vertex.name);
+            // O(N + (M + E))
+            while (!stack.isEmpty()) {
+                AdjacencyList adj = stack.pop();
+                adj.vertex.visited = true;
 
-        //         for (Edge edge : adj.adjacentEdges) {
+                System.out.println("VERTEX " + adj.vertex.name);
 
-        //             if (edge.vertex1 == adj.vertex) {
-        //                 if (time < edge.tutup) {
-        //                     System.out.println(edge.vertex1.name + " " + edge.vertex2.name);
-        //                     traversables++;
-        //                 }
-        //             }
+                for (Edge edge : adj.adjacentEdges) {
 
-        //             Vertex next = edge.vertex2;
-        //             if (!next.visited) {
-        //                 next.visited = true;
-        //                 stack.push(vertices.get(next.name));
-        //             }
-        //         }
-        //     }
+                    if (edge.vertex1 == adj.vertex) {
+                        if (time < edge.tutup) {
+                            System.out.println(edge.vertex1.name + " " + edge.vertex2.name);
+                            traversables++;
+                        }
+                    }
 
-        //     return traversables;
-        // }
+                    Vertex next = edge.vertex2;
+                    if (!next.visited) {
+                        next.visited = true;
+                        stack.push(vertices.get(next.name));
+                    }
+                }
+            }
 
+            return traversables;
+        }
+
+        // O (N + N + M + E) => O (N + M + E)
         public boolean traverseToSeeConnection(String source, String destination) {
             for (AdjacencyList adj : vertices.values()) {
                 adj.vertex.visited = false;
@@ -393,7 +405,9 @@ class Graph {
             return false;
         }
 
+        // O(N + N + ((M + E) * log N) + K)
         public int traverseToCountMinCoupun(String source, String destination) {
+            // O(N)
             for (AdjacencyList adj : vertices.values()) {
                 adj.vertex.visited = false;
                 adj.vertex.spKupon = Integer.MAX_VALUE;
@@ -407,6 +421,7 @@ class Graph {
 
             int verticesSeen = 0;
 
+            // O(N + ((M + E) * log N))
             while (!grey.isEmpty() && verticesSeen < vertices.size()) {
 
                 AdjacencyList adj = grey.poll();
@@ -432,6 +447,7 @@ class Graph {
                 }
             }
 
+            // O(K + L)
             if (vertices.get(destination).vertex.visited) {
                 return pow(couponBase, vertices.get(destination).vertex.spKupon) % 1000000007;
             } else {
@@ -439,61 +455,7 @@ class Graph {
             }
         }
 
-        // public double traverseToCountMinCoupun(String source, String destination) {
-        //     for (AdjacencyList adj : vertices.values()) {
-        //         adj.vertex.spKupon = Integer.MAX_VALUE;
-        //     }
-
-        //     int minCoupon = -1;
-
-        //     AdjacencyList src = vertices.get(source);
-        //     src.vertex.spKupon = 0;
-
-        //     PriorityQueue<AdjacencyList> grey = new PriorityQueue<>(vertices.size(), new KuponComparator());
-        //     Set<AdjacencyList> green = new HashSet<>();
-        //     grey.add(src);
-
-        //     while (grey.size() >= 1) {
-        //         AdjacencyList adj = grey.poll();
-        //         minCoupon = adj.vertex.spKupon;
-        //         green.add(adj);
-
-        //         // System.out.println("VERTEX " + adj.vertex.name);
-
-        //         if (adj.vertex == vertices.get(destination).vertex)
-        //             // return Math.pow(couponBase, minCoupon) % 1000000007;
-        //             return pow(couponBase, minCoupon) % 1000000007;
-
-        //         for (Edge edge : adj.adjacentEdges) {
-
-        //             Vertex next = edge.vertex2;
-        //             if (adj.vertex == edge.vertex2) {
-        //                 next = edge.vertex1;
-        //             }
-
-        //             // Mengubah bentuk kupon on edge to the form of (b) as in (a^b)
-        //             int coupon = log(edge.kupon, couponBase);
-        //             // System.out.println(edge.kupon + " - " + coupon);
-
-        //             if (!green.contains(vertices.get(next.name))) {
-
-        //                 int sp = adj.vertex.spKupon + coupon;
-        //                 if (sp < next.spKupon) {
-        //                     next.spKupon = sp;
-        //                 }
-
-        //                 // System.out.println(next.name + " " + next.spKupon);
-
-        //                 if (!grey.contains(vertices.get(next.name))) {
-        //                     grey.add(vertices.get(next.name));
-        //                 }
-        //             }
-        //         }
-        //     }
-
-        //     return -1;
-        // }
-
+        // O(N + N + ((M + E) * log N))
         public int traverseToSeeMaxDepartureTimeEx(String source, String destination) {
             for (AdjacencyList adj : vertices.values()) {
                 adj.vertex.visited = false;
@@ -541,6 +503,11 @@ class Graph {
             }
         }
 
+        // O(Q * ((2 * (N + (M + E)) + 3(N + (M + E) * log N) + K)
+        // O(Q * ((N + M + E) + N + ((M + E) * log N) + K))
+        // O(Q * (N + M + E (MlogN + ElogN) + K))
+
+        // O(N + N + ((M + E) * log N)) => O(N + ((M + E) * log N))
         public int traverseToSeeMaxDepartureTimeReg(String source, String destination) {
             for (AdjacencyList adj : vertices.values()) {
                 adj.vertex.visited = false;

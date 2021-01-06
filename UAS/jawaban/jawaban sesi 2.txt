@@ -1,0 +1,97 @@
+// Nomor 1
+
+a)  Panggilan search(bst.root, 17, 30) mengembalikan 28
+
+b) rekursif
+1. Pemanggilan awal: search(15, 17, 30)
+2. Pemanggilan kedua: search(28, 17, 30) // Karena memenuhi 17 > 15 && 30 > 15,
+3. Mengembalikan root => 28 // Karena tidak memenuhi seluruh ketiga kondisi if/else if block (17 < 28 && 20 > 28)
+
+c) Closest (mutual) ancestor yang sama  (saya ragu dgn istilahnya :D)
+
+// Nomor 2
+
+a) Setelah 72 di-remove, yang menggantikan adalah 62
+
+b) Node 62 (yang menggantikan 72), karena predecessor inorder mengambil node paling maksimal di subtree kiri 72
+
+c) Jawaban tertera di dalam folder gdrive
+
+https://drive.google.com/drive/folders/1Tbgxo7cy_3A5yVCS4YITTPP4ovdGolED?usp=sharing
+
+// Nomor 3
+
+Hsize = 10
+
+Key => Index
+12 => 12 % 10 = 2
+32 => 32 % 10 = 2
+      COLLISION!
+      H1(x) = (2 + f(1)) = 3
+      maka f(1) = 1
+13 => 13 % 10 = 3
+      COLLISION!
+      H1(x) = (3 + f(1)) = 4
+      maka f(1) = 1
+43 => 43 % 10 = 3
+      COLLISION!
+      H1(x) = (3 + f(1)) = 4
+      maka f(1) = 1
+      COLLISION!
+      H2(x) = (3 + f(2)) = 5
+      maka f(2) = 2
+16 => 16 % 10 = 6
+33 => 33 % 10 = 3
+      COLLISION!
+      H1(x) = (3 + f(1)) = 4
+      maka f(1) = 1
+      COLLISION!
+      H2(x) = (3 + f(2)) = 5
+      maka f(2) = 2
+      COLLISION!
+      H3(x) = (3 + f(3)) = 6
+      maka f(3) = 3
+      COLLISION!
+      H4(x) = (3 + f(4)) = 7
+      maka f(4) = 4
+
+a) Berdasarkan perhitungan di atas, dapat diketahui bahwa collision resolution yang diterapkan 
+adalah Linear Probing. Jawaban dapat diketahui dengan melihat pola formulasi hashing collision
+resolution (f(i)) pada insertion 43, di mana f(1) = 1, dan f(2) = 2. Dapat dilihat juga dari
+penjabaran insertion 33, di mana berlaku f(i) = i dari 1 <= i <= 4.
+
+b) Data dengan key 32, 13, 43, dan 33
+
+c) Simulasi insertion key 42
+Key => Index
+42 => 42 % 10 = 2
+
+Maka key 42 akan mengisi index 2.
+
+Sehingga hasil akhir akan seperti:
+index 2
+data = 42
+isActive = true
+
+index 3
+data = 32
+isActive false
+
+// Nomor 4
+
+Baris sepuluh akan menjadi:
+currentPos = currentPos + (i * i);
+
+Sesuai dengan fungsi hashing quadratic probing
+hi(x) = (h(x) + f(i)) % hsize
+dengan f(i) = i^2
+
+// Nomor 5
+
+a) Baris yang perlu diubah adalah line 6
+b) Mengubah kondisi pada while menjadi:
+  while(array[currentPos] != null && isActive(array, currentPos))
+
+Perlu ditambahkan pengecekan isActive agar program dapat mengetahui bahwa key 13 sudah dihapus dan statusnya
+sudah tidak aktif (isActive = false). Sehingga pada insertion 53 program dapat mengisi posisi yang sebelumnya
+ditempati key 13.

@@ -9,6 +9,8 @@ import java.util.*;
  * 1. Nanya ke Althof data structure yg ga dibatasin size untuk nyimpen hashnode
  * 2. Nanya ke Fairuza soal biar ga overflow
  * 3. Nanya ke Hugo soal biar ga overflow
+ *
+ * lesson learned => pake long untuk operasi yg jumbo2 dan kalo modulo jgn pake += *=
  */
 
 public class Lab4 {
@@ -41,6 +43,7 @@ public class Lab4 {
 
         List<String> substrings = new ArrayList<>();
 
+        // O(P^2)
         for (int i = 0; i < P.length(); i++) {
             for (int j = i + 1; j <= P.length(); j++) {
                 substrings.add(P.substring(i, j));
@@ -49,6 +52,7 @@ public class Lab4 {
 
         Set<String> setSubstrings = new HashSet<>(substrings);
 
+        // O(S)
         for (String substring : setSubstrings) {
             hashtable.add(substring);
         }
@@ -97,14 +101,18 @@ class HashTable {
         this.Y = Y;
     }
 
+    // O(S)
     public void add(String substring) {
 
         int index = hash(substring);
 
+
         if (table.get(index) != null) {
+            // O(1)
             HashNode head = table.get(index);
             head.length += 1;
 
+            // O(S)
             while (head.next != null) {
                 head = head.next;
                 head.length += 1;
@@ -120,30 +128,26 @@ class HashTable {
     public int hash(String substring) {
         // UTF-16 'a' => 97
 
-        int index = 0;
-        int calcX = 1;
+        long index = 0;
+        long calcX = 1;
 
+        // O(S)
         for (int i = 0; i < substring.length(); i++) {
 
-            int val = ((int) substring.charAt(i)) - 96;
+            long val = ((int) substring.charAt(i)) - 96;
+            index = (index + (val * calcX) % Y) % Y;
 
-            if (i == 0) {
-                index += (val % Y * 1 % Y) % Y;
-            } else {
-                index += (val % Y * calcX % Y) % Y;
-            }
-
-            calcX *= X;
+            calcX = (calcX * X) % Y;
         }
 
-        return index % Y;
+        return (int) index % Y;
     }
 
     public int score() {
         int score = 0;
 
         for (Map.Entry<Integer, HashNode> map : table.entrySet()) {
-            System.out.println(map.getKey() + " " + map.getValue().length);
+            // System.out.println(map.getKey() + " " + map.getValue().length);
 
             HashNode node = map.getValue();
 
